@@ -1,0 +1,16 @@
+{
+  "name": "stillgate",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.2",
+    "@types/node": "24",
+    "typescript": "^7.0.2"
+  }
+}

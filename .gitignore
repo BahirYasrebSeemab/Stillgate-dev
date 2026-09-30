@@ -1,0 +1,21 @@
+# dependencies and build output
+node_modules/
+dist/
+out/
+release/
+*.tsbuildinfo
+
+# local dev data (agent/manager config, state, tokens)
+.dev-data/
+
+# secrets: keys and certificates must never be committed
+*.pem
+*.key
+*.pfx
+.env*
+
+# logs and OS junk
+*.log
+.DS_Store
+Thumbs.db
+
