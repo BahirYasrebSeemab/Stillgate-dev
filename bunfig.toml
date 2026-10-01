@@ -1,0 +1,5 @@
+# Bun settings for this repo.
+[test]
+# The password tests run real scrypt (32 MiB, slow on purpose). On a busy PC the default
+# 5 s per test was once exceeded, so allow more time.
+timeout = 20000
