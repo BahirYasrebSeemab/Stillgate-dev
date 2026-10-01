@@ -6,11 +6,13 @@ import { windowsToolPath } from "../windows/exec";
 
 // Lists running processes with their path and owner.
 //
-// Measured on a real Windows 11 PC (2026-10-01):
-//   - asking CIM/WMI for every process owner (GetOwner) took ~16 s  -> far too slow for a 2 s loop
-//   - Get-Process -IncludeUserName takes ~0.17 s, BUT starting powershell.exe takes ~0.9 s
-// So ONE PowerShell process is started once and kept running: each round we write "list" to its
-// stdin and read back one JSON line. It needs admin rights for -IncludeUserName (the agent is SYSTEM).
+// Measured on a real Windows 11 PC (2026-10-01, ~200 processes):
+//   - CIM GetOwner for every process:                       ~16 s    (far too slow for a 2 s loop)
+//   - Get-Process -IncludeUserName + reading .Path:         ~2.0 s   (.Path looks up each file)
+//   - owners from Get-Process + paths from ONE CIM query:   ~0.27 s  <- used
+//   - starting powershell.exe itself:                       ~0.9 s   -> so it is started ONCE
+// One PowerShell process stays running: each round we write "list" to its stdin and read back
+// one JSON line. -IncludeUserName needs admin rights (the agent runs as SYSTEM).
 // Traps handled:
 //   - PowerShell prints in the old OEM code page, which turned "Администратор" into "?????????????"
 //     -> the script switches its output to UTF-8 first
@@ -25,8 +27,10 @@ const LOOP_SCRIPT = [
   "while ($true) {",
   "  $line = [Console]::In.ReadLine()",
   "  if ($null -eq $line -or $line -eq 'exit') { break }",
-  "  $list = Get-Process -IncludeUserName | ForEach-Object {",
-  "    [pscustomobject]@{ pid = [int]$_.Id; name = [string]$_.ProcessName; path = $_.Path; user = $_.UserName }",
+  "  $owners = @{}",
+  "  foreach ($p in Get-Process -IncludeUserName) { $owners[$p.Id] = $p.UserName }",
+  "  $list = foreach ($w in Get-CimInstance -ClassName Win32_Process -Property ProcessId,Name,ExecutablePath) {",
+  "    [pscustomobject]@{ pid = [int]$w.ProcessId; name = [string]$w.Name; path = $w.ExecutablePath; user = $owners[[int]$w.ProcessId] }",
   "  }",
   "  [Console]::Out.WriteLine((ConvertTo-Json -InputObject @($list) -Compress))",
   "  [Console]::Out.Flush()",
