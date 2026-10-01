@@ -41,8 +41,15 @@ foreach ($path in $NodeExe, "$AgentSource\main.js", "$AgentSource\cli.js", "$Kio
 # The kiosk user must exist and must NOT be an administrator
 $user = Get-LocalUser -Name $KioskUser
 $sid = $user.SID.Value
-$admins = Get-LocalGroupMember -SID "S-1-5-32-544" | ForEach-Object { $_.SID.Value }
-if ($admins -contains $sid) { throw "$KioskUser is an administrator. The kiosk user must be a standard user." }
+# (Get-LocalGroupMember can fail on PCs whose Administrators group contains unresolvable accounts)
+try {
+  $admins = Get-LocalGroupMember -SID "S-1-5-32-544" -ErrorAction Stop | ForEach-Object { $_.SID.Value }
+  if ($admins -contains $sid) { throw "$KioskUser is an administrator. The kiosk user must be a standard user." }
+} catch [Microsoft.PowerShell.Commands.GroupMemberNotFoundException] {
+} catch {
+  if ($_.Exception.Message -like "*must be a standard user*") { throw }
+  Write-Warning "Could not list the Administrators group. CHECK BY HAND that '$KioskUser' is a standard user."
+}
 
 $programDir = "C:\Program Files\AsdLabLock"
 $agentDir = "$programDir\agent"
