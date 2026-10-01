@@ -7,18 +7,27 @@ Grep the code for `UNTESTED(windows)` to see every risky spot.
 Mark each line: `[ ]` not tested · `[x]` works · `[!]` broken (write what happened).
 
 ## A. Build on Windows
-- [ ] `bun install`, `bun run build`, `bun run test` pass on Windows (same as on Linux)
-- [ ] `bun x install-electron` in `packages/manager` and `packages/kiosk-shell`; `bun run start` opens each app
-- [ ] `bun run dist` (electron-builder) works for manager (NSIS) and kiosk-shell (`dir`). If dependencies are missing: add `[install] linker = "hoisted"` to a root `bunfig.toml`
-- [ ] `bun run bundle` in `packages/agent-service` → `release/agent/main.js` + `cli.js` run with `node`
+- [x] `bun install`, `bun run build`, `bun run test` pass on Windows (same as on Linux) — 2026-10-01, Win11 Pro, Node 22.14 (install needed retries on a flaky connection: `bun install --network-concurrency=4`)
+- [x] `bun x install-electron`; both apps open (dev mode) — manager UI renders, kiosk shows locked page and launcher
+- [x] electron-builder works with Bun's layout (no hoisted linker needed): manager NSIS installer + kiosk `win-unpacked`; app.asar contains all runtime deps; packaged kiosk-shell.exe starts and connects to the agent
+- [x] `bun run bundle` → `main.js` + `cli.js` run with Windows `node`
 
 ## B. Manager PC
-- [ ] Manager starts, creates the certificate, shows "Server running on port 47800"
-- [ ] `safeStorage` works (no "OS encryption not available" error)
+- [x] Manager starts, creates the certificate, shows "Server running on port 47800" (dev run)
+- [x] `safeStorage` works: TLS key stored DPAPI-sealed (`v10` prefix)
 - [ ] Tray icon shows; closing the window keeps the server running; "Quit" stops it
 - [ ] Starts with Windows after install (login item)
 - [ ] `firewall-manager.ps1` creates the rule; another LAN device can NOT connect to 47800; visitor PCs can
 - [ ] Windows firewall pop-up on first start: choose Cancel, then run the firewall script
+
+## A2. Verified on the dev PC (Windows 11, NOT installed as a service) — 2026-10-01
+- [x] Agent + demo manager over TLS on Windows: pairing via CLI, online, LOCKED, synced, unlock (countdown) / lock / rearm
+- [x] Kiosk shell (dev window) ↔ agent over loopback + token file; locked page → launcher with real program icons → maintenance page
+- [x] Restore over IPC: 4× wrong, 5th → 60 s lockout, right password refused during lockout, then MAINTENANCE; effects in correct order (dry-run); no password text in any log
+- [x] Registry reads (`reg query`), ProfileImagePath lookup, Edge at the expected path
+- [x] Process listing: FIXED three real bugs (pid 0 rejected; 16 s per round; non-ASCII names became `???`) → now ~0.27 s per round, UTF-8 names
+- [x] All PowerShell scripts parse (PowerShell 5.1), ASCII-only; `check-pc.ps1` runs
+- [x] Cyrillic user-profile path works (logs, app data)
 
 ## C. Visitor PC install (dry-run on, audit on)
 - [ ] Kiosk user created as **standard** user; separate admin account exists
@@ -56,7 +65,7 @@ Mark each line: `[ ]` not tested · `[x]` works · `[!]` broken (write what happ
 - [ ] Shift at boot reaches the login screen; Ctrl+Alt+Del → Switch user works (or document if not)
 
 ## F. Enforcer (audit first, at least a few days)
-- [ ] Process listing works and how long it takes per cycle (CIM `GetOwner` for every process; must stay well under 2 s)
+- [x] Process listing speed on the dev PC: ~0.27 s per round (long-running PowerShell, Get-Process owners + one CIM path query). Re-measure as SYSTEM on a visitor PC: [ ]
 - [ ] `would_kill` log while LOCKED/UNLOCKED: review every entry; add needed system helpers / folders
 - [ ] Edge helper processes and WebView2 (`msedgewebview2.exe`) behaviour with sites allowed / not allowed
 - [ ] Kiosk shell's own helper processes are never on the list

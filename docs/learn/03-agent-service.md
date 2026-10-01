@@ -42,7 +42,14 @@
 | `power.ts` | `shutdown.exe /r` (restart), `/s` (shut down), `/a` (abort), `/t` (delay), `/c` (message). |
 
 ### `enforcer/`: closing programs that aren't allowed
-- `processes.ts`: asks PowerShell (CIM/WMI) for every process with its path and owner. The script is fixed text, sent base64-encoded. **Trap handled:** PowerShell turns a one-item list into a plain object, so the script wraps it with `@(...)`.
+- `processes.ts`: lists every process with its path and owner. **This was rewritten after testing on real Windows**, which found three bugs:
+  1. Process id **0** exists (System Idle Process), and our schema wrongly rejected it, so the whole list was thrown away.
+  2. Asking WMI for each process's owner took **16 seconds** per round, far too slow for a 2-second loop.
+  3. PowerShell prints in the old OEM code page, so the name `Администратор` arrived as `?????????????`.
+
+  The fix is **one PowerShell process, started once and kept running**. Each round the agent writes `list` to its stdin and reads back one JSON line. Owners come from `Get-Process -IncludeUserName`; paths come from **one** CIM query; the two are matched by process id; output is forced to UTF-8. Result: **~0.27 s per round**.
+
+  Lesson: the slow part was something invisible (reading `.Path` makes Windows look up every file, and starting PowerShell costs 0.9 s). Measure first, then fix.
 - `decide.ts`: **pure** rules, unit-tested:
   - **MAINTENANCE:** close nothing.
   - **Always allowed:** our own shell folder.

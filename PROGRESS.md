@@ -15,15 +15,19 @@ Maintained by Claude. Read at the start of every session, then `PLAN.md` / `docs
 | `kiosk-shell` (Electron: agent client, launcher, hotkey, password panel, hardening) | done | any PC: hotkey tests + integration test with the real agent IPC server; **window never launched yet** |
 | `tools/` (WinSW XML, install/uninstall/emergency/firewall PowerShell, WDAC notes) | done | **waiting for Windows** (not even syntax-checked: no PowerShell on this Linux box) |
 | Docs (README, SETUP, TESTING, ARCHITECTURE, DECISIONS, SECURITY, RECOVERY, docs/learn/00–06) | done | — |
-| Real-hardware testing (`TESTING.md` A–G) | **todo** | — |
+| Windows build + dev-PC testing (`TESTING.md` A, A2, parts of B/F) | done 2026-10-01 | **verified on Windows (dev PC)**: build, all tests, packaging, manager↔agent↔kiosk full chain in dry-run, restore/lockout, UI captures |
+| Real visitor-PC testing (`TESTING.md` C–G, `docs/TEST-DAY.md`) | **todo (Bahir, at ASD)** | — |
 
 Test totals at last run: **115 Bun tests + 11 Node tests, all passing**; `bun run typecheck` clean.
 
 Commits: `feat: add shared protocol, state machine, crypto` → `feat: add agent service` → `feat: add manager app and server` → `feat: add kiosk shell` → `feat: add windows tools and docs`.
 
+## Windows copy
+`/mnt/c/yasreb/yasreb_projects/stillgate` (= `C:\yasreb\yasreb_projects\stillgate`) is a git clone of the WSL repo. Workflow: change + commit in WSL, then `git.exe pull` there, then build/test with Windows `bun`/`node` via `cmd.exe /c`. Deploy folder for the test day: `C:\yasreb\yasreb_projects\stillgate-deploy`.
+
 ## Next steps
-1. Bahir studies `docs/learn/` (start at `00-index.md`).
-2. Move to Windows (PLAN.md Part 1), run `TESTING.md` section A (build + launch both Electron apps), then B → F on ONE visitor PC.
+1. Bahir runs `docs/TEST-DAY.md` on ONE visitor PC at ASD and writes down ✅/❌ + logs.
+2. Fix what it finds; then roll out to the other PCs.
 3. Fix whatever Windows testing finds; tick `TESTING.md`; mark verified spots here.
 4. Optional later: Russian/Tajik strings, WDAC audit, `bun build --compile` single-exe agent.
 

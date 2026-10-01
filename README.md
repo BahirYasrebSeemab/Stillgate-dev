@@ -7,7 +7,7 @@ A visitor PC boots straight into a locked screen. The registration desk unlocks 
 - If the manager is offline, PCs **stay locked**. Nothing unlocks without the manager.
 - A maintenance hotkey (**Space + B + Y + S**) plus the restore password gives the normal Windows desktop back, even offline.
 
-> ⚠️ **Status: built and unit/integration-tested on Linux; NOT yet tested on Windows.**
+> ⚠️ **Status: built and tested on Linux and on a Windows 11 dev PC (full chain in dry-run); NOT yet tested as an installed service on a visitor PC.** See [`docs/TEST-DAY.md`](docs/TEST-DAY.md).
 > Everything that touches Windows (registry, shell switching, process closing, restarts, services, installers) is marked `UNTESTED(windows)` and listed in [`TESTING.md`](TESTING.md). Safe defaults are on: **dry-run** (Windows changes are only logged) and **audit** (nothing is closed).
 
 ## The four parts
@@ -22,7 +22,7 @@ A visitor PC boots straight into a locked screen. The registration desk unlocks 
 ```bash
 bun install          # install all dependencies
 bun run build        # compile everything (+ both UIs)
-bun run test         # 115 Bun tests + 11 Node tests (incl. end-to-end manager <-> agent)
+bun run test         # 118 Bun tests + 11 Node tests (incl. end-to-end manager <-> agent)
 bun run typecheck    # also type-checks the tests and both React UIs
 ```
 

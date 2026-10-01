@@ -3,6 +3,7 @@
 # cannot find dependencies, add to the repo's bunfig.toml:  [install] linker = "hoisted"
 appId: local.asd.lablock.manager
 productName: ASD Lab Manager
+artifactName: ASD-Lab-Manager-Setup-${version}.${ext}
 directories:
   output: release
 files:
