@@ -1,0 +1,11 @@
+{
+  // Type-checks the tests only (they are not compiled into dist/)
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": false,
+    "noEmit": true,
+    "types": ["node", "bun"]
+  },
+  "include": ["src"],
+  "exclude": []
+}

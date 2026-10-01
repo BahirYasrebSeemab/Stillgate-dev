@@ -7,6 +7,14 @@
       "bun": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./node": {
+      "bun": "./src/node/index.ts",
+      "types": "./dist/node/index.d.ts",
+      "default": "./dist/node/index.js"
     }
+  },
+  "dependencies": {
+    "zod": "^4.6.5"
   }
 }

@@ -1,6 +1,8 @@
 # PROGRESS — ASD Lab Lock
 
-Maintained by Claude (coach). Read at the start of every session.
+Maintained by Claude. Read at the start of every session.
+
+> **MODE CHANGE (2026-10-01, Bahir's explicit request):** Claude now builds the whole project itself (overrides CLAUDE.md §0 rules 1, 3, 4 for project-local tooling): Claude may run `bun install/add`, `tsc -b`, `bun test` inside the repo, and commits one short commit per part under Bahir's git identity (no co-author/Claude lines, never push). Still no system installs, no Windows commands. Every part gets a learning doc in `docs/learn/` so Bahir can study it later.
 
 ## Lessons
 
@@ -8,8 +10,8 @@ Maintained by Claude (coach). Read at the start of every session.
 |---|---|---|---|
 | 0a | Environment (Bun, Node LTS, git, editor, VM plan) | done (tools preinstalled; VM → Phase C) | versions to record in SETUP.md |
 | 0b | Node for Python developers (`~/learning/node-basics`) | skipped by Bahir after ex. 2 — teach net/zod/execFile/event-loop on first use in lessons 2, 7, 9 | — |
-| 1 | Repo skeleton | build passes; closing: .editorconfig, SETUP.md, first commit | verified on any PC (tsc -b + node run) |
-| 2 | shared: types and protocol | todo | — |
+| 1 | Repo skeleton | done (SETUP.md skipped by Bahir — write during Windows move) | verified on any PC (tsc -b + node run) |
+| 2 | shared: types and protocol | in progress (zod 4.6.5; steps 1–4 done; step 5 ids.ts given; typos MAX_UNLCOK_SEC/MAX_PLICY_ITEMS to fix) | — |
 | 3 | shared: state machine + tests | todo | — |
 | 4 | shared: crypto + pairing string + tests | todo | — |
 | 5 | shared: allow-list + browser policy + tests | todo | — |
@@ -29,9 +31,12 @@ Maintained by Claude (coach). Read at the start of every session.
 
 - Bun/Node strip types, only tsc checks (≈ python vs mypy); tsc emits even on errors unless noEmitOnError.
 - `unknown` + type guard (`value is T`) for JSON.parse output.
+- Discriminated unions need distinct literal tags (understood via ok: boolean question).
 - `private: true` and why leaked keys must be rotated, not just deleted.
 
 ## Struggles / revisit
+
+- Prefers very short, simple ("like a 10-year-old") explanations before code.
 
 - Typos in config keys (workspace, targate, reference, *.logs) — silent when the tool ignores unknown keys. Suggested pasting configs, typing code.
 - Worked around a failing package import with a relative path instead of asking — reinforce: import packages by name, run `bun install` after adding packages.

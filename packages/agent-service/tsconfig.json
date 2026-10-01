@@ -3,9 +3,9 @@
   "compilerOptions": {
     "composite": true,
     "rootDir": "src",
-    "outDir": "dist",
-    "types": ["node", "bun"]
+    "outDir": "dist"
   },
   "include": ["src"],
+  "exclude": ["src/**/*.test.ts", "src/**/test-helpers/**"],
   "references": [{ "path": "../shared" }]
 }

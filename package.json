@@ -6,6 +6,7 @@
   ],
   "scripts": {
     "build": "tsc -b",
+    "typecheck": "tsc -b && tsc -p packages/shared/tsconfig.test.json && tsc -p packages/agent-service/tsconfig.test.json",
     "test": "bun test"
   },
   "devDependencies": {
