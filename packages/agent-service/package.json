@@ -16,7 +16,8 @@
   "scripts": {
     "start": "node dist/main.js",
     "cli": "node dist/cli.js",
-    "dev": "ASD_DATA_DIR=../../.dev-data/agent ASD_LOG_ECHO=1 node dist/main.js"
+    "dev": "ASD_DATA_DIR=../../.dev-data/agent ASD_LOG_ECHO=1 node dist/main.js",
+    "bundle": "bun build src/main.ts src/cli.ts --target=node --format=cjs --outdir=release/agent --entry-naming=[name].js --external bufferutil --external utf-8-validate"
   },
   "dependencies": {
     "@asd/shared": "workspace:*",

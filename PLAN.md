@@ -1,5 +1,7 @@
 # PLAN.md — ASD Lab Lock master plan
 
+> **Update 2026-10-01:** at Bahir's request the whole project was then BUILT by Claude (see `PROGRESS.md`). This plan is kept as the original map; where the build differs, `docs/DECISIONS.md` is the source of truth, and `docs/learn/` explains what was built.
+
 Written at Bahir's request, as the map for all future coaching sessions.
 `CLAUDE.md` defines **what** we build and **how the coach teaches**. This file lists **the order, the file-by-file specs, the decisions already made, and the traps**.
 

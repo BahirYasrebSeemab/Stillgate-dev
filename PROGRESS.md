@@ -1,66 +1,53 @@
 # PROGRESS — ASD Lab Lock
 
-Maintained by Claude. Read at the start of every session.
+Maintained by Claude. Read at the start of every session, then `PLAN.md` / `docs/`.
 
-> **MODE CHANGE (2026-10-01, Bahir's explicit request):** Claude now builds the whole project itself (overrides CLAUDE.md §0 rules 1, 3, 4 for project-local tooling): Claude may run `bun install/add`, `tsc -b`, `bun test` inside the repo, and commits one short commit per part under Bahir's git identity (no co-author/Claude lines, never push). Still no system installs, no Windows commands. Every part gets a learning doc in `docs/learn/` so Bahir can study it later.
+> **MODE (since 2026-10-01, Bahir's explicit request): BUILD MODE.** Claude builds the project itself instead of coaching line by line (overrides CLAUDE.md §0 rules 1, 3, 4 for project-local tooling). Claude may run `bun install/add`, `tsc -b`, `bun test`, `bun build` inside the repo and commits one short commit per part under Bahir's git identity (no co-author/Claude lines, never push). Still: no system installs, no Windows commands, safety defaults stay on, every risky spot marked `UNTESTED(windows)`. Every part has a simple explanation in `docs/learn/` for Bahir to study afterwards.
 
-## Lessons
+## Status (2026-10-01)
 
-| # | Lesson | Status | Verified |
-|---|---|---|---|
-| 0a | Environment (Bun, Node LTS, git, editor, VM plan) | done (tools preinstalled; VM → Phase C) | versions to record in SETUP.md |
-| 0b | Node for Python developers (`~/learning/node-basics`) | skipped by Bahir after ex. 2 — teach net/zod/execFile/event-loop on first use in lessons 2, 7, 9 | — |
-| 1 | Repo skeleton | done (SETUP.md skipped by Bahir — write during Windows move) | verified on any PC (tsc -b + node run) |
-| 2 | shared: types and protocol | in progress (zod 4.6.5; steps 1–4 done; step 5 ids.ts given; typos MAX_UNLCOK_SEC/MAX_PLICY_ITEMS to fix) | — |
-| 3 | shared: state machine + tests | todo | — |
-| 4 | shared: crypto + pairing string + tests | todo | — |
-| 5 | shared: allow-list + browser policy + tests | todo | — |
-| 6 | agent: config, atomic JSON, state runner | todo | — |
-| 7 | agent: password, registry wrapper, CLI | todo | — |
-| 8 | agent: server link | todo | — |
-| 9 | agent: shell IPC | todo | — |
-| 10 | agent: enforcer, policies, shell switch | todo | — |
-| 11 | kiosk-shell: main, hardening, preload | todo | — |
-| 12 | kiosk-shell: screens, hotkey, password panel | todo | — |
-| 13 | manager: server | todo | — |
-| 14 | manager: UI | todo | — |
-| 15 | tools: scripts, WinSW, firewall, WDAC notes | todo | — |
-| 16 | docs and hardening | todo | — |
+| Part | Status | Verified |
+|---|---|---|
+| Repo skeleton, tooling | done | any PC: `bun run build`, `bun run typecheck` |
+| `shared` (protocol, state machine, crypto, pairing, allow-list, Edge policy, Node helpers) | done | any PC: Bun tests |
+| `agent-service` (config, runner, effects, registry, shell switch, lockdown, enforcer, server link, shell IPC, password, CLI, bundle) | done | any PC: Bun tests + Node TLS tests + dry-run smoke run; **Windows behaviour waiting for Windows** |
+| `manager` (Electron: agent server, TLS cert, pairing, store, IPC, React UI, tray) | done | any PC: unit + **end-to-end** (real agent link ↔ real server, Node); **UI never launched yet** |
+| `kiosk-shell` (Electron: agent client, launcher, hotkey, password panel, hardening) | done | any PC: hotkey tests + integration test with the real agent IPC server; **window never launched yet** |
+| `tools/` (WinSW XML, install/uninstall/emergency/firewall PowerShell, WDAC notes) | done | **waiting for Windows** (not even syntax-checked: no PowerShell on this Linux box) |
+| Docs (README, SETUP, TESTING, ARCHITECTURE, DECISIONS, SECURITY, RECOVERY, docs/learn/00–06) | done | — |
+| Real-hardware testing (`TESTING.md` A–G) | **todo** | — |
 
-## What Bahir learned
+Test totals at last run: **115 Bun tests + 11 Node tests, all passing**; `bun run typecheck` clean.
 
+Commits: `feat: add shared protocol, state machine, crypto` → `feat: add agent service` → `feat: add manager app and server` → `feat: add kiosk shell` → `feat: add windows tools and docs`.
+
+## Next steps
+1. Bahir studies `docs/learn/` (start at `00-index.md`).
+2. Move to Windows (PLAN.md Part 1), run `TESTING.md` section A (build + launch both Electron apps), then B → F on ONE visitor PC.
+3. Fix whatever Windows testing finds; tick `TESTING.md`; mark verified spots here.
+4. Optional later: Russian/Tajik strings, WDAC audit, `bun build --compile` single-exe agent.
+
+## UNTESTED(windows) spots (mirror of TESTING.md; grep the code for `UNTESTED(windows)`)
+- agent: registry wrapper, kiosk hive load/unload, shell switch + read-back, lockdown value names (VERIFY), power/shutdown.exe, process listing speed (CIM GetOwner), watcher kill, monotonic clock across service restarts, WinSW stop signal
+- shared: atomic rename over existing file on Windows, Edge install path
+- kiosk-shell: running as Winlogon Shell, launching programs/Edge, session-end close handling, token-file ACL
+- manager: safeStorage/DPAPI, tray, login item, firewall pop-up, electron-builder packaging with Bun's isolated layout
+- tools: every PowerShell script, WinSW XML
+
+## What Bahir learned (coach-mode lessons before the switch)
 - Bun/Node strip types, only tsc checks (≈ python vs mypy); tsc emits even on errors unless noEmitOnError.
 - `unknown` + type guard (`value is T`) for JSON.parse output.
-- Discriminated unions need distinct literal tags (understood via ok: boolean question).
-- `private: true` and why leaked keys must be rotated, not just deleted.
+- Discriminated unions need distinct literal tags (the `ok: boolean` question).
+- `private: true`, and why leaked keys must be rotated, not just deleted.
+- Branded IDs and zod, as simple analogies.
 
-## Struggles / revisit
-
+## Notes about Bahir
 - Prefers very short, simple ("like a 10-year-old") explanations before code.
+- Config-key typos were silent when tools ignore unknown keys; recommended pasting configs, typing code.
 
-- Typos in config keys (workspace, targate, reference, *.logs) — silent when the tool ignores unknown keys. Suggested pasting configs, typing code.
-- Worked around a failing package import with a relative path instead of asking — reinforce: import packages by name, run `bun install` after adding packages.
+## Decisions
+See `docs/DECISIONS.md` (27 entries, supersedes PLAN.md D1–D20 where they differ).
+Other: host PC is Windows 11 Home, too weak for a VM (test on a real spare PC instead). Project folder `~/projects/stillgate`.
 
-## Open questions
-
-- D13 plumbing additions (pair messages, `init` CLI) — Bahir to confirm.
-
-## Side quest (2026-09-29)
-
-- Bahir paused 0b to set up nvim + tmux first. nvim 0.12.5, tmux 3.4, Windows Terminal on WSL. Resume 0b ex. 2 afterwards.
-- Done by Claude (Bahir asked): phase 1+2 rewrite of nvim config (split into lua/yasreb/plugins/), new ~/.config/tmux/tmux.conf. Backup in ~/config-backup-2026-09-29/. Waiting on Bahir: delete ~/.tmux.conf, install tree-sitter CLI, :Lazy sync, report. luarocks disabled in lazy; mason healthcheck timeout is harmless. Phase 3 (TPM, vim-tmux-navigator, resurrect, sessionizer) + phase 4 (cheat sheet) still todo.
-
-## Decisions so far
-
-- Verified: TS 7.0.2 supports `tsc -b` and CJS output; Bun `"bun"` export condition works; Bun 1.4 uses isolated linker (links in packages/<pkg>/node_modules); `bun add --filter` exists.
-- D3 change: `verbatimModuleSyntax` dropped (conflicts with CJS output); `types` listed explicitly (TS 6 default). `composite` goes in each package tsconfig, not base.
-- **Master plan lives in `PLAN.md`** — read it after this file every session.
-- Phase A (lessons 0b–10) in WSL; move to native Windows at Lesson 11 (PLAN.md Part 1).
-- Global decisions D1–D20 are in PLAN.md Part 2.
-- Host PC is Windows 11 Home and too weak for a VM; VM/Phase C postponed, discuss much later.
-- Staying on Opus for now (not switching to Sonnet yet).
-- Project folder is `~/projects/stillgate` (target layout in CLAUDE.md calls it `asd-lab-lock/`).
-
-## UNTESTED(windows) spots
-
-- (none yet)
+## Side quest (2026-09-29): editor setup
+nvim config rewritten (lua/yasreb/plugins/), tmux config at ~/.config/tmux/tmux.conf, backup in ~/config-backup-2026-09-29/. Still todo if Bahir wants: tmux phase 3 (TPM, vim-tmux-navigator, resurrect, sessionizer) and the cheat sheet.

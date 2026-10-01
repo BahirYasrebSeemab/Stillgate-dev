@@ -1,5 +1,6 @@
 {
   "name": "@asd/kiosk-shell",
+  "productName": "ASD Kiosk Shell",
   "version": "0.1.0",
   "private": true,
   "description": "ASD Lab Lock kiosk shell: the visitor PC's screen",
