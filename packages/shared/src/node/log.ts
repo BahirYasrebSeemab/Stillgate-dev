@@ -32,7 +32,8 @@ export function createLogger(options: LoggerOptions): Logger {
   let size = options.file === null ? 0 : currentSize(options.file);
 
   const write = (level: LogLevel, event: string, fields: LogFields = {}): void => {
-    const line = `${JSON.stringify({ at: new Date().toISOString(), level, event, ...redact(fields, 0) })}\n`;
+    // Fields first, so a field can never overwrite the timestamp, level or event name
+    const line = `${JSON.stringify({ ...redact(fields, 0), at: new Date().toISOString(), level, event })}\n`;
     if (options.echo) process.stderr.write(line);
     if (options.file === null) return;
     try {

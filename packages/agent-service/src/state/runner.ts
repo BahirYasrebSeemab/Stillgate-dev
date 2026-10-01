@@ -71,7 +71,7 @@ export class StateRunner extends EventEmitter<RunnerEvents> {
     const { state, effects } = reduce(before, event, this.now());
     if (state === before && effects.length === 0) return;
     this.current = state;
-    if (state.kind !== before.kind) this.log.info("state_change", { from: before.kind, to: state.kind, event: event.type });
+    if (state.kind !== before.kind) this.log.info("state_change", { from: before.kind, to: state.kind, trigger: event.type });
     this.emit("change", state);
     await this.runEffects(effects, state);
   }
