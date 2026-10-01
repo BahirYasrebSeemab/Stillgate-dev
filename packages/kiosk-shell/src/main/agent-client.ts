@@ -82,6 +82,7 @@ export class AgentClient extends EventEmitter<ClientEvents> {
     socket.setEncoding("utf8");
 
     socket.on("connect", () => {
+      this.log.info("agent_connected", { port: file.value.port });
       void this.request({ cmd: "subscribe" }).then((reply) => {
         if (reply?.type === "reply" && reply.result.kind === "state") this.setState(reply.result.state);
       });
@@ -93,6 +94,7 @@ export class AgentClient extends EventEmitter<ClientEvents> {
     });
     socket.on("error", () => undefined);
     socket.on("close", () => {
+      if (this.current !== null) this.log.warn("agent_disconnected");
       if (this.socket === socket) this.socket = null;
       for (const reqId of [...this.pending.keys()]) this.settle(reqId, null);
       this.setState(null);

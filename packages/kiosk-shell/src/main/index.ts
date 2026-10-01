@@ -33,13 +33,16 @@ function start(): void {
     view = { state, receivedAt: Date.now() };
     // Locked (or agent unreachable): stay on top of everything. Unlocked: let launched apps show.
     const unlocked = state?.lock === "UNLOCKED";
-    window?.setAlwaysOnTop(!unlocked, "screen-saver");
+    if (process.env["ASD_KIOSK_WINDOWED"] !== "1" || app.isPackaged) window?.setAlwaysOnTop(!unlocked, "screen-saver");
     if (!unlocked) window?.focus();
     window?.webContents.send(PUSH, view);
   });
 
   window = createKioskWindow();
   agent.start();
-  app.on("window-all-closed", () => undefined); // never quit
+  // Installed: never quit. Development windowed mode: closing the window ends the app.
+  app.on("window-all-closed", () => {
+    if (process.env["ASD_KIOSK_WINDOWED"] === "1" && !app.isPackaged) app.quit();
+  });
   log.info("kiosk_shell_started", { agentDataDir: agentDataDir() });
 }

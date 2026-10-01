@@ -6,6 +6,8 @@ import { BrowserWindow, app, session, type Input } from "electron";
 // privileged action goes through the agent.
 
 export const DEV_SERVER_URL = process.env["ASD_DEV_SERVER_URL"];
+// Development only: a normal, closable window instead of the full-screen kiosk (ignored when installed)
+const WINDOWED = process.env["ASD_KIOSK_WINDOWED"] === "1" && !app.isPackaged;
 
 // Shortcuts that would reload the page, open DevTools, zoom or close things
 const BLOCKED_KEYS = new Set(["F5", "F11", "F12"]);
@@ -14,15 +16,17 @@ const BLOCKED_CTRL_KEYS = new Set(["r", "w", "q", "n", "t", "p", "s", "o", "+", 
 export function createKioskWindow(): BrowserWindow {
   const window = new BrowserWindow({
     show: false,
-    frame: false,
-    fullscreen: true,
-    kiosk: true,
-    alwaysOnTop: true,
-    closable: false,
-    minimizable: false,
-    resizable: false,
-    movable: false,
-    skipTaskbar: true,
+    frame: WINDOWED,
+    fullscreen: !WINDOWED,
+    kiosk: !WINDOWED,
+    alwaysOnTop: !WINDOWED,
+    closable: WINDOWED,
+    minimizable: WINDOWED,
+    resizable: WINDOWED,
+    movable: WINDOWED,
+    skipTaskbar: !WINDOWED,
+    width: 1280,
+    height: 800,
     backgroundColor: "#0f2238",
     webPreferences: {
       preload: join(__dirname, "..", "preload", "index.js"),
@@ -59,7 +63,7 @@ export function createKioskWindow(): BrowserWindow {
     app.exit(0);
   });
   window.on("close", (event) => {
-    if (!sessionEnding) event.preventDefault();
+    if (!sessionEnding && !WINDOWED) event.preventDefault();
   });
   window.once("ready-to-show", () => window.show());
 

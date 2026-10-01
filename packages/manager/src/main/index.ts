@@ -44,7 +44,9 @@ async function start(): Promise<void> {
     }, PUSH_THROTTLE_MS);
   });
 
-  await service.start();
+  // Development only: ASD_SERVER_HOST=127.0.0.1 keeps the server off the network (no firewall pop-up)
+  const devHost = app.isPackaged ? undefined : process.env["ASD_SERVER_HOST"];
+  await service.start(devHost);
   if (app.isPackaged) app.setLoginItemSettings({ openAtLogin: true }); // start with Windows
   createTray();
   showWindow();
