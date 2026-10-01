@@ -5,6 +5,7 @@ export * from "./browser-policy";
 export * from "./constants";
 export * from "./errors";
 export * from "./ids";
+export * from "./lines";
 export * from "./pairing";
 export * from "./password-rules";
 export * from "./policy";

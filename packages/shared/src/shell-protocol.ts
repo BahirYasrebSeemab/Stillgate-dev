@@ -69,3 +69,12 @@ export function parseShellRequest(line: string): Result<ShellRequest, string> {
 export function parseAgentToShell(line: string): Result<AgentToShell, string> {
   return parseJsonMessage(AgentToShell, line, MAX_SHELL_PUSH_BYTES);
 }
+
+// The file the agent writes at start and the kiosk shell reads to find and authenticate to it.
+// UNTESTED(windows): the install script gives the kiosk user read access to this file only.
+export const ShellTokenFile = z.strictObject({
+  schemaVersion: z.literal(1),
+  token: Hex64,
+  port: z.int().min(1024).max(65535),
+});
+export type ShellTokenFile = z.infer<typeof ShellTokenFile>;

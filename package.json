@@ -7,7 +7,8 @@
   "scripts": {
     "build": "tsc -b",
     "typecheck": "tsc -b && tsc -p packages/shared/tsconfig.test.json && tsc -p packages/agent-service/tsconfig.test.json",
-    "test": "bun test"
+    "test": "bun test && bun run test:node",
+    "test:node": "tsc -b && tsc -p packages/agent-service/tsconfig.nodetest.json && node --test \"packages/agent-service/dist-test/**/*.nodetest.js\""
   },
   "devDependencies": {
     "@types/bun": "^1.4.2",

@@ -67,3 +67,10 @@ export function isIPv4(text: string): boolean {
     parts.every((part) => /^(0|[1-9]\d{0,2})$/.test(part) && Number(part) <= 255)
   );
 }
+
+// The URL the launcher opens for an allowed (already validated) site pattern:
+// "khanacademy.org/x" -> "https://khanacademy.org/x", ".exact.org" -> "https://exact.org"
+export function siteUrl(pattern: string): string {
+  if (/^https?:\/\//.test(pattern)) return pattern.replace(/^(https?:\/\/)\./, "$1");
+  return `https://${pattern.replace(/^\./, "")}`;
+}

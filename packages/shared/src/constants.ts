@@ -52,3 +52,7 @@ export const PAIRING_CODE_TTL_MS = 10 * 60_000;
 
 // Manager event log size
 export const MAX_EVENT_LOG_ENTRIES = 5000;
+
+// Microsoft Edge install location (sites open here). UNTESTED(windows): confirm on the PCs.
+export const EDGE_APP_FOLDER = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application";
+export const EDGE_EXE = `${EDGE_APP_FOLDER}\\msedge.exe`;

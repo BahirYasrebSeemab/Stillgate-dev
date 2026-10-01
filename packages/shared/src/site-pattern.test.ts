@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { buildBrowserPolicy } from "./browser-policy";
 import { Policy, SiteEntry } from "./policy";
-import { isIPv4, validateSitePattern } from "./site-pattern";
+import { isIPv4, siteUrl, validateSitePattern } from "./site-pattern";
 
 const valid = (pattern: string) => {
   const result = validateSitePattern(pattern);
@@ -73,5 +73,13 @@ describe("Policy schema and buildBrowserPolicy", () => {
     expect(edge.lists.URLAllowlist).toEqual(["a.org"]);
     expect(edge.dwords.InPrivateModeAvailability).toBe(1);
     expect(edge.dwords.DeveloperToolsAvailability).toBe(2);
+  });
+});
+
+describe("siteUrl", () => {
+  it("adds https and drops the exact-host dot", () => {
+    expect(siteUrl("khanacademy.org/x")).toBe("https://khanacademy.org/x");
+    expect(siteUrl(".exact.org")).toBe("https://exact.org");
+    expect(siteUrl("http://intranet.local:8080")).toBe("http://intranet.local:8080");
   });
 });

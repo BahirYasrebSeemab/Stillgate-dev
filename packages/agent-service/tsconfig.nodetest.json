@@ -1,0 +1,12 @@
+{
+  // Compiles the Node-runner tests (*.nodetest.ts) into dist-test/ so `node --test` can run them
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist-test",
+    "declaration": false,
+    "declarationMap": false,
+    "types": ["node"]
+  },
+  "include": ["src/**/*.nodetest.ts", "src/test-helpers/**/*.ts"]
+}

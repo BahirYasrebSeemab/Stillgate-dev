@@ -2,7 +2,19 @@
   "name": "@asd/agent-service",
   "version": "0.1.0",
   "private": true,
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "node dist/main.js",
+    "cli": "node dist/cli.js",
+    "dev": "ASD_DATA_DIR=../../.dev-data/agent ASD_LOG_ECHO=1 node dist/main.js"
+  },
   "dependencies": {
-    "@asd/shared": "workspace:*"
+    "@asd/shared": "workspace:*",
+    "ws": "^8.22.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.18.2",
+    "selfsigned": "^5.5.0"
   }
 }

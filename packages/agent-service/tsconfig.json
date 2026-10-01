@@ -6,6 +6,6 @@
     "outDir": "dist"
   },
   "include": ["src"],
-  "exclude": ["src/**/*.test.ts", "src/**/test-helpers/**"],
+  "exclude": ["src/**/*.test.ts", "src/**/*.nodetest.ts", "src/**/test-helpers/**"],
   "references": [{ "path": "../shared" }]
 }
