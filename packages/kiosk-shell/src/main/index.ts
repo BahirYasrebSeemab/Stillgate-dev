@@ -52,14 +52,19 @@ function start(): void {
 // Development only: ASD_DEV_CAPTURE_DIR=<folder> saves a picture of THIS window (not the screen)
 // shortly after every state change, so the UI can be checked without looking at the PC.
 let captureCount = 0;
+// It also writes the page's visible TEXT, which is reliable even when Windows has stopped
+// repainting the window because other windows cover it.
 function captureForDevelopment(label: string): void {
   const dir = process.env["ASD_DEV_CAPTURE_DIR"];
   if (dir === undefined || app.isPackaged) return;
-  const name = `${String(++captureCount).padStart(2, "0")}-${label}.png`;
+  const name = `${String(++captureCount).padStart(2, "0")}-${label}`;
   setTimeout(() => {
-    void window?.webContents
-      .capturePage()
-      .then((image) => writeFile(join(dir, name), image.toPNG()))
+    const contents = window?.webContents;
+    if (contents === undefined) return;
+    void contents.capturePage().then((image) => writeFile(join(dir, `${name}.png`), image.toPNG())).catch(() => undefined);
+    void contents
+      .executeJavaScript("document.body.innerText")
+      .then((text: unknown) => writeFile(join(dir, `${name}.txt`), String(text), "utf8"))
       .catch(() => undefined);
   }, 1500);
 }
