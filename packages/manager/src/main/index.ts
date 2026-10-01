@@ -1,3 +1,4 @@
+import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { Menu, Tray, app, nativeImage, type BrowserWindow } from "electron";
 import { createLogger } from "@asd/shared/node";
@@ -62,6 +63,7 @@ async function start(): Promise<void> {
 function showWindow(): void {
   if (window === null || window.isDestroyed()) {
     window = createManagerWindow();
+    captureForDevelopment(window);
     window.on("close", (event) => {
       if (quitting) return;
       event.preventDefault();
@@ -84,4 +86,20 @@ function createTray(): void {
     ]),
   );
   tray.on("double-click", () => showWindow());
+}
+
+// Development only: ASD_DEV_CAPTURE_DIR=<folder> saves a picture + the text of THIS window
+// a few seconds after it loads (to check the UI without looking at the screen).
+function captureForDevelopment(target: BrowserWindow): void {
+  const dir = process.env["ASD_DEV_CAPTURE_DIR"];
+  if (dir === undefined || app.isPackaged) return;
+  target.webContents.once("did-finish-load", () => {
+    setTimeout(() => {
+      void target.webContents.capturePage().then((image) => writeFile(join(dir, "manager.png"), image.toPNG())).catch(() => undefined);
+      void target.webContents
+        .executeJavaScript("document.body.innerText")
+        .then((text: unknown) => writeFile(join(dir, "manager.txt"), String(text), "utf8"))
+        .catch(() => undefined);
+    }, 3000);
+  });
 }
