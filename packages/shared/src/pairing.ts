@@ -22,7 +22,8 @@ export function encodePairing(info: PairingInfo): string {
 }
 
 export function decodePairing(input: string): Result<PairingInfo, string> {
-  const parts = input.trim().split(":");
+  // Tolerate copy-paste leftovers: spaces and quotes around the string (seen on real Windows shells)
+  const parts = input.trim().replace(/^["']+|["']+$/g, "").trim().split(":");
   if (parts.length !== 5) return err("pairing string must have 5 parts separated by ':'");
   const [prefix, ip, portText, fingerprint, code] = parts as [string, string, string, string, string];
 

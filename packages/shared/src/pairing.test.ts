@@ -12,6 +12,12 @@ describe("pairing string", () => {
     expect(decodePairing(text)).toEqual({ ok: true, value: info });
   });
 
+  it("tolerates quotes and spaces from copy-paste", () => {
+    const text = `asd1:192.168.1.10:47800:${FP}:ABCD2345`;
+    expect(decodePairing(` "${text}" `).ok).toBe(true);
+    expect(decodePairing(`'${text}'`).ok).toBe(true);
+  });
+
   it("rejects malformed strings", () => {
     const bad = [
       `asd2:192.168.1.10:47800:${FP}:ABCD2345`,
