@@ -3,6 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "main": "dist/main.js",
+  "exports": {
+    "./server-link": {
+      "types": "./dist/server-link/index.d.ts",
+      "default": "./dist/server-link/index.js"
+    }
+  },
   "scripts": {
     "start": "node dist/main.js",
     "cli": "node dist/cli.js",

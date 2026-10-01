@@ -2,3 +2,4 @@
 export * from "./atomic-json";
 export * from "./crypto";
 export * from "./log";
+export * from "./json-store";

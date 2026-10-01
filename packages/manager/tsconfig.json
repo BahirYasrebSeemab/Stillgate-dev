@@ -1,0 +1,12 @@
+{
+  // Main process + preload (Node side), compiled to CommonJS by tsc
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": ["src/main", "src/preload", "src/common"],
+  "exclude": ["src/**/*.test.ts", "src/**/*.nodetest.ts"],
+  "references": [{ "path": "../shared" }]
+}

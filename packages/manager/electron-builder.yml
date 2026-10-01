@@ -1,0 +1,22 @@
+# Builds the Windows installer for the manager PC: bun run dist (run ON WINDOWS).
+# UNTESTED(windows): packaging with Bun's isolated node_modules layout. If electron-builder
+# cannot find dependencies, add to the repo's bunfig.toml:  [install] linker = "hoisted"
+appId: local.asd.lablock.manager
+productName: ASD Lab Manager
+directories:
+  output: release
+files:
+  - dist/main/**
+  - dist/preload/**
+  - dist/common/**
+  - dist/renderer/**
+  - assets/**
+  - package.json
+asar: true
+win:
+  target: nsis
+nsis:
+  oneClick: false
+  perMachine: true
+  allowToChangeInstallationDirectory: false
+  createDesktopShortcut: true

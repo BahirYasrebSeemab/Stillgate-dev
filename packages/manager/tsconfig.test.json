@@ -1,0 +1,7 @@
+{
+  // Type-checks the Bun tests only (they are not compiled into dist/)
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "composite": false, "noEmit": true, "types": ["node", "bun"] },
+  "include": ["src/main", "src/common"],
+  "exclude": ["src/**/*.nodetest.ts"]
+}

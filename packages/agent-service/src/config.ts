@@ -1,4 +1,3 @@
-import { rename } from "node:fs/promises";
 import {
   DEFAULT_SHELL_IPC_PORT,
   EMPTY_POLICY,
@@ -9,7 +8,7 @@ import {
   Policy,
   isIPv4,
 } from "@asd/shared";
-import { readJson, writeJsonAtomic, type Logger } from "@asd/shared/node";
+import { JsonFileStore, type Logger } from "@asd/shared/node";
 import { z } from "zod";
 
 export const KioskConfig = z.strictObject({
@@ -52,43 +51,10 @@ export function pairingOf(config: AgentConfig): Pairing | null {
   return server && machineId && secret ? { server, machineId, secret } : null;
 }
 
-// Holds the current config in memory and saves every change atomically.
-// Changes are made by passing a function that returns a NEW config object (no mutation).
-export class ConfigStore {
-  private constructor(
-    private current: AgentConfig,
-    private readonly file: string,
-  ) {}
+// The config file store: in memory + atomic saves (see JsonFileStore in @asd/shared/node).
+// A corrupt config is moved aside and the agent starts unpaired, so nothing can unlock.
+export type ConfigStore = JsonFileStore<typeof AgentConfig>;
 
-  static async load(file: string, log: Logger): Promise<ConfigStore> {
-    return new ConfigStore(await readConfigFile(file, log), file);
-  }
-
-  // Re-read the file (after the CLI changed it)
-  async reload(log: Logger): Promise<void> {
-    this.current = await readConfigFile(this.file, log);
-  }
-
-  get value(): AgentConfig {
-    return this.current;
-  }
-
-  async update(change: (config: AgentConfig) => AgentConfig): Promise<AgentConfig> {
-    const next = AgentConfig.parse(change(this.current));
-    await writeJsonAtomic(this.file, next);
-    this.current = next;
-    return next;
-  }
-}
-
-async function readConfigFile(file: string, log: Logger): Promise<AgentConfig> {
-  const result = await readJson(file, AgentConfig);
-  if (result.ok) return result.value;
-  if (result.error.kind === "corrupt") {
-    // Keep the broken file for inspection and start safe (unpaired, so nothing can unlock)
-    const backup = `${file}.corrupt-${Date.now()}`;
-    await rename(file, backup).catch(() => undefined);
-    log.error("config_corrupt", { detail: result.error.detail, backup });
-  }
-  return DEFAULT_CONFIG;
-}
+export const ConfigStore = {
+  load: (file: string, log: Logger): Promise<ConfigStore> => JsonFileStore.open(file, AgentConfig, DEFAULT_CONFIG, log),
+};
