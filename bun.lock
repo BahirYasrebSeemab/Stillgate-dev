@@ -26,11 +26,13 @@
       "name": "@asd/kiosk-shell",
       "version": "0.1.0",
       "dependencies": {
+        "@asd/shared": "workspace:*",
         "react": "^19.3.0",
         "react-dom": "^19.3.0",
         "zod": "^4.6.5",
       },
       "devDependencies": {
+        "@asd/agent-service": "workspace:*",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "@vitejs/plugin-react": "^6.1.1",

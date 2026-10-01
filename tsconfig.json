@@ -3,6 +3,7 @@
   "references": [
     { "path": "packages/shared" },
     { "path": "packages/agent-service" },
-    { "path": "packages/manager" }
+    { "path": "packages/manager" },
+    { "path": "packages/kiosk-shell" }
   ]
 }

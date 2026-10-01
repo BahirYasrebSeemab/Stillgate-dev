@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" width="240" height="120">
+  <!-- PLACEHOLDER logo. Replace this file with the real ASD logo (never fetched automatically). -->
+  <rect x="2" y="2" width="236" height="116" rx="16" fill="none" stroke="#ffffff" stroke-width="4" stroke-dasharray="10 8"/>
+  <text x="120" y="70" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="44" font-weight="700" fill="#ffffff">ASD</text>
+  <text x="120" y="98" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="13" fill="#b7c7d9">logo placeholder</text>
+</svg>

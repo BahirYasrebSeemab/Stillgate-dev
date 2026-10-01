@@ -1,8 +1,9 @@
 import { join } from "node:path";
+import { agentDataDir, shellTokenFile } from "@asd/shared/node";
 
-// Everything the agent stores lives in one folder:
+// Everything the agent stores lives in one folder (see agentDataDir in @asd/shared/node):
 //   Windows:  %ProgramData%\AsdLabLock      (ACL: SYSTEM + Administrators; set by the install script)
-//   dev:      $ASD_DATA_DIR, or ./.dev-data (gitignored)
+//   dev:      $ASD_DATA_DIR, or ./.dev-data/agent (gitignored)
 
 export type AgentPaths = {
   readonly dataDir: string;
@@ -14,15 +15,12 @@ export type AgentPaths = {
 };
 
 export function resolveAgentPaths(env: NodeJS.ProcessEnv = process.env): AgentPaths {
-  const dataDir =
-    env["ASD_DATA_DIR"] ??
-    (env["ProgramData"] === undefined ? join(process.cwd(), ".dev-data", "agent") : join(env["ProgramData"], "AsdLabLock"));
+  const dataDir = agentDataDir(env);
   return {
     dataDir,
     configFile: join(dataDir, "config.json"),
     stateFile: join(dataDir, "state.json"),
-    // Readable by the kiosk user too (separate ACL), so it lives in its own subfolder
-    tokenFile: join(dataDir, "shell", "shell-token"),
+    tokenFile: shellTokenFile(env), // readable by the kiosk user too (separate folder ACL)
     controlDir: join(dataDir, "control"),
     logFile: join(dataDir, "logs", "agent.log"),
   };

@@ -7,6 +7,10 @@
     "./server-link": {
       "types": "./dist/server-link/index.d.ts",
       "default": "./dist/server-link/index.js"
+    },
+    "./shell-ipc": {
+      "types": "./dist/shell-ipc/server.d.ts",
+      "default": "./dist/shell-ipc/server.js"
     }
   },
   "scripts": {
