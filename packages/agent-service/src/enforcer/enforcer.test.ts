@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { Policy } from "@asd/shared";
 import { silentLogger } from "@asd/shared/node";
 import { decideKills, type DecideInput } from "./decide";
-import { parseProcessList, type ProcessInfo } from "./processes";
+import { parseProcessList, userName, type ProcessInfo } from "./processes";
 
 const policy = Policy.parse({
   version: 1,
@@ -63,6 +63,16 @@ describe("decideKills", () => {
 });
 
 describe("parseProcessList", () => {
+  it("accepts process id 0 (System Idle Process, seen on real Windows)", () => {
+    expect(parseProcessList('[{"pid":0,"name":"Idle","path":null,"user":null}]', silentLogger)).toHaveLength(1);
+  });
+
+  it("strips the computer name from owners and keeps non-English names", () => {
+    expect(userName("DESKTOP-DIBHQC4\\Администратор")).toBe("Администратор");
+    expect(userName("kiosk")).toBe("kiosk");
+    expect(userName(null)).toBeNull();
+  });
+
   it("parses PowerShell JSON and rejects garbage", () => {
     const json = JSON.stringify([{ pid: 4, name: "a.exe", path: null, user: null }]);
     expect(parseProcessList(json, silentLogger)).toEqual([{ pid: 4, name: "a.exe", path: null, user: null }]);

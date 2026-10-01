@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { join } from "node:path";
+import { win32 } from "node:path";
 import type { Logger } from "@asd/shared/node";
 
 // The ONLY Windows programs the agent may run, always by absolute path under System32
@@ -38,6 +38,11 @@ export type ExecOptions = {
   readonly systemRoot?: string;
 };
 
+// Absolute path of an allowed tool, e.g. C:\Windows\System32\reg.exe
+export function windowsToolPath(tool: WindowsTool, systemRoot = process.env["SystemRoot"] ?? "C:\\Windows"): string {
+  return win32.join(systemRoot, "System32", WINDOWS_TOOLS[tool]);
+}
+
 export function createExec(options: ExecOptions): Exec {
   const platform = options.platform ?? process.platform;
   const systemRoot = options.systemRoot ?? process.env["SystemRoot"] ?? "C:\\Windows";
@@ -49,7 +54,7 @@ export function createExec(options: ExecOptions): Exec {
         return DRY_RUN_OK;
       }
       if (platform !== "win32") return NOT_WINDOWS;
-      const file = join(systemRoot, "System32", WINDOWS_TOOLS[tool]);
+      const file = windowsToolPath(tool, systemRoot);
       return runFile(file, args, runOptions.timeoutMs ?? DEFAULT_TIMEOUT_MS);
     },
   };

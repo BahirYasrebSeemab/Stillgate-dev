@@ -3,9 +3,9 @@ import type { Logger } from "@asd/shared/node";
 import type { AgentConfig } from "../config";
 import type { Exec } from "../windows/exec";
 import { decideKills } from "./decide";
-import { listProcesses, type ProcessInfo } from "./processes";
+import { userName, type ProcessSource } from "./processes";
 
-// Every 2 seconds: list the kiosk user's processes, decide, and close what is not allowed.
+// Every 2 seconds (after the previous round finished): list the kiosk user's processes, decide, and close what is not allowed.
 // enforcement = "audit"   -> only log what WOULD be closed (default, safe)
 // enforcement = "enforce" -> taskkill /PID <pid> /F   (/F = force)
 // Only processes owned by the kiosk user are ever touched.
@@ -20,7 +20,7 @@ export type WatcherDeps = {
   readonly lockState: () => LockStateName;
   readonly kioskShellDir: () => string;
   readonly windowsDir: string;
-  readonly list?: (exec: Exec, log: Logger) => Promise<ProcessInfo[] | null>;
+  readonly source: ProcessSource;
 };
 
 export class ProcessWatcher {
@@ -39,6 +39,7 @@ export class ProcessWatcher {
   stop(): void {
     this.running = false;
     if (this.timer !== null) clearTimeout(this.timer);
+    this.deps.source.close();
   }
 
   async runOnce(): Promise<number> {
@@ -46,9 +47,10 @@ export class ProcessWatcher {
     const kiosk = config.kiosk;
     if (kiosk === undefined) return 0;
 
-    const all = await (this.deps.list ?? listProcesses)(this.deps.exec, this.deps.log);
+    const all = await this.deps.source.list();
     if (all === null) return 0;
-    const mine = all.filter((process) => process.user?.toLowerCase() === kiosk.user.toLowerCase());
+    const kioskUser = kiosk.user.toLowerCase();
+    const mine = all.filter((process) => userName(process.user)?.toLowerCase() === kioskUser);
 
     const decisions = decideKills({
       processes: mine,

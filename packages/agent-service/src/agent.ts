@@ -18,6 +18,7 @@ import { ConfigStore, pairingOf } from "./config";
 import { processControlRequests, type ControlRequest } from "./control";
 import type { Clock } from "./deps";
 import { createEffectRunner } from "./effects";
+import { PowerShellProcessSource } from "./enforcer/processes";
 import { ProcessWatcher } from "./enforcer/watcher";
 import type { AgentPaths } from "./paths";
 import { RestoreGuard } from "./password/restore";
@@ -110,6 +111,7 @@ export async function createAgent(paths: AgentPaths, clock: Clock, log: Logger, 
   const watcher = new ProcessWatcher({
     exec: run,
     log,
+    source: new PowerShellProcessSource(log),
     config: () => config.value,
     lockState: () => runner.state.kind,
     kioskShellDir: () => (config.value.kiosk === undefined ? DEFAULT_KIOSK_DIR : dirname(config.value.kiosk.shellExe)),
