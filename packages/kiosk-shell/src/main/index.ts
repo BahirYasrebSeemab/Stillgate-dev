@@ -1,3 +1,4 @@
+import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { app, type BrowserWindow } from "electron";
 import { agentDataDir, createLogger, shellTokenFile } from "@asd/shared/node";
@@ -36,6 +37,7 @@ function start(): void {
     if (process.env["ASD_KIOSK_WINDOWED"] !== "1" || app.isPackaged) window?.setAlwaysOnTop(!unlocked, "screen-saver");
     if (!unlocked) window?.focus();
     window?.webContents.send(PUSH, view);
+    captureForDevelopment(state?.lock ?? "agent-unreachable");
   });
 
   window = createKioskWindow();
@@ -45,4 +47,19 @@ function start(): void {
     if (process.env["ASD_KIOSK_WINDOWED"] === "1" && !app.isPackaged) app.quit();
   });
   log.info("kiosk_shell_started", { agentDataDir: agentDataDir() });
+}
+
+// Development only: ASD_DEV_CAPTURE_DIR=<folder> saves a picture of THIS window (not the screen)
+// shortly after every state change, so the UI can be checked without looking at the PC.
+let captureCount = 0;
+function captureForDevelopment(label: string): void {
+  const dir = process.env["ASD_DEV_CAPTURE_DIR"];
+  if (dir === undefined || app.isPackaged) return;
+  const name = `${String(++captureCount).padStart(2, "0")}-${label}.png`;
+  setTimeout(() => {
+    void window?.webContents
+      .capturePage()
+      .then((image) => writeFile(join(dir, name), image.toPNG()))
+      .catch(() => undefined);
+  }, 1500);
 }
