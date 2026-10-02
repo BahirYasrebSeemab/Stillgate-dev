@@ -40,7 +40,7 @@ function start(): void {
     captureForDevelopment(state?.lock ?? "agent-unreachable");
   });
 
-  window = createKioskWindow();
+  window = createKioskWindow(log);
   agent.start();
   // Installed: never quit. Development windowed mode: closing the window ends the app.
   app.on("window-all-closed", () => {

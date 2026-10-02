@@ -1,5 +1,6 @@
 import { join } from "node:path";
-import { BrowserWindow, app, session, type Input } from "electron";
+import { BrowserWindow, app, screen, session, type Input } from "electron";
+import type { Logger } from "@asd/shared/node";
 
 // The kiosk window: full screen, no frame, cannot be closed, cannot navigate anywhere.
 // Visitors can attack this window, so it gets no power: sandboxed, no Node, and every
@@ -13,20 +14,24 @@ const WINDOWED = process.env["ASD_KIOSK_WINDOWED"] === "1" && !app.isPackaged;
 const BLOCKED_KEYS = new Set(["F5", "F11", "F12"]);
 const BLOCKED_CTRL_KEYS = new Set(["r", "w", "q", "n", "t", "p", "s", "o", "+", "-", "=", "0", "i", "j", "u"]);
 
-export function createKioskWindow(): BrowserWindow {
+export function createKioskWindow(log: Logger): BrowserWindow {
+  // Kiosk: start exactly the size of the screen. Development window: 1280 x 800.
+  const bounds = WINDOWED ? { width: 1280, height: 800 } : screen.getPrimaryDisplay().bounds;
   const window = new BrowserWindow({
+    ...bounds,
     show: false,
     frame: WINDOWED,
     fullscreen: !WINDOWED,
+    fullscreenable: true,
     kiosk: !WINDOWED,
     alwaysOnTop: !WINDOWED,
     closable: WINDOWED,
     minimizable: WINDOWED,
-    resizable: WINDOWED,
+    // Must stay resizable: on Windows a non-resizable window can refuse to go full screen
+    // (seen on the first real test PC: the kiosk opened as a plain window).
+    resizable: true,
     movable: WINDOWED,
     skipTaskbar: !WINDOWED,
-    width: 1280,
-    height: 800,
     backgroundColor: "#0f2238",
     webPreferences: {
       preload: join(__dirname, "..", "preload", "index.js"),
@@ -65,7 +70,24 @@ export function createKioskWindow(): BrowserWindow {
   window.on("close", (event) => {
     if (!sessionEnding && !WINDOWED) event.preventDefault();
   });
-  window.once("ready-to-show", () => window.show());
+  // On Windows, full screen / kiosk requested while the window was still hidden can be ignored,
+  // so switch them on again right after showing it, and come back if anything leaves them.
+  const enforceKiosk = (): void => {
+    if (WINDOWED || window.isDestroyed()) return;
+    if (!window.isKiosk()) window.setKiosk(true);
+    if (!window.isFullScreen()) window.setFullScreen(true);
+  };
+  window.once("ready-to-show", () => {
+    window.show();
+    enforceKiosk();
+    window.focus();
+    setTimeout(() => {
+      enforceKiosk();
+      log.info("kiosk_window", { fullScreen: window.isFullScreen(), kiosk: window.isKiosk(), bounds: window.getBounds() });
+    }, 1000);
+  });
+  window.on("leave-full-screen", () => setTimeout(enforceKiosk, 100));
+  window.on("restore", () => setTimeout(enforceKiosk, 100));
 
   if (DEV_SERVER_URL !== undefined && !app.isPackaged) void window.loadURL(DEV_SERVER_URL);
   else void window.loadFile(join(__dirname, "..", "renderer", "index.html"));
