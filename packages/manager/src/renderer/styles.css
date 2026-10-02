@@ -37,6 +37,9 @@ th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--lin
 th { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
 tr.selected { background: #eef5fc; }
 .actions { white-space: nowrap; text-align: right; }
+.minutes { display: inline-flex; align-items: center; gap: 4px; margin-left: 8px; }
+.minutes input { width: 70px; }
+.rename { display: inline-flex; gap: 6px; align-items: center; }
 .muted { color: var(--muted); }
 .small { font-size: 12px; }
 .ok { color: var(--green); }

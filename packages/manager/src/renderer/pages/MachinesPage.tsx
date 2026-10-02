@@ -9,6 +9,9 @@ type Props = { readonly snapshot: Snapshot };
 export function MachinesPage({ snapshot }: Props) {
   const [selected, setSelected] = useState<ReadonlySet<MachineId>>(new Set());
   const [message, setMessage] = useState<string | null>(null);
+  // Minutes typed in the toolbar, used by "Unlock" and "Extend"
+  // (Electron does not support window.prompt, so there is no pop-up box)
+  const [minutes, setMinutes] = useState("30");
   const now = useNow();
   const elapsedSec = Math.max(0, Math.floor((now - snapshot.takenAt) / 1000));
   const ids = [...selected].filter((id) => snapshot.machines.some((m) => m.id === id));
@@ -28,11 +31,12 @@ export function MachinesPage({ snapshot }: Props) {
     const missed = result.value.filter((outcome) => !outcome.delivered).length;
     setMessage(missed > 0 ? t.machines.notDelivered(missed) : null);
   };
-  const askMinutes = (): number | null => {
-    const answer = window.prompt(t.machines.minutesPrompt, "60");
-    const minutes = Number(answer);
-    const sec = Math.round(minutes * 60);
-    return Number.isFinite(sec) && sec >= MIN_UNLOCK_SEC && sec <= MAX_UNLOCK_SEC ? sec : null;
+  const sendForMinutes = (type: "unlock" | "extend") => {
+    const sec = Math.round(Number(minutes) * 60);
+    if (minutes.trim() === "" || !Number.isFinite(sec) || sec < MIN_UNLOCK_SEC || sec > MAX_UNLOCK_SEC) {
+      return setMessage(t.machines.badMinutes);
+    }
+    void send({ type, durationSec: sec });
   };
   const confirmPower = (label: string, action: "restart" | "shutdown") => {
     if (window.confirm(t.machines.confirmPower(label, ids.length))) void send({ type: "power", action });
@@ -46,8 +50,13 @@ export function MachinesPage({ snapshot }: Props) {
         <span className="muted">{t.machines.selected(ids.length)}</span>
         <button disabled={ids.length === 0} onClick={() => void send({ type: "unlock", durationSec: 3600 })}>{t.machines.unlock1h}</button>
         <button disabled={ids.length === 0} onClick={() => void send({ type: "unlock", durationSec: 7200 })}>{t.machines.unlock2h}</button>
-        <button disabled={ids.length === 0} onClick={() => { const sec = askMinutes(); if (sec !== null) void send({ type: "unlock", durationSec: sec }); }}>{t.machines.unlockCustom}</button>
-        <button disabled={ids.length === 0} onClick={() => { const sec = askMinutes(); if (sec !== null) void send({ type: "extend", durationSec: sec }); }}>{t.machines.extend}</button>
+        <span className="minutes">
+          <input type="number" min={1} max={720} value={minutes} aria-label={t.machines.minutes}
+            onChange={(e) => setMinutes(e.target.value)} />
+          <span className="muted">{t.machines.minutes}</span>
+        </span>
+        <button disabled={ids.length === 0} onClick={() => sendForMinutes("unlock")}>{t.machines.unlockCustom}</button>
+        <button disabled={ids.length === 0} onClick={() => sendForMinutes("extend")}>{t.machines.extend}</button>
         <button disabled={ids.length === 0} className="warn" onClick={() => void send({ type: "lock" })}>{t.machines.lock}</button>
         <button disabled={ids.length === 0} onClick={() => void send({ type: "rearm" })}>{t.machines.rearm}</button>
         <button disabled={ids.length === 0} onClick={() => confirmPower(t.machines.restart, "restart")}>{t.machines.restart}</button>
@@ -92,12 +101,14 @@ function MachineRow({ machine, elapsedSec, checked, onToggle, onMessage }: RowPr
   const remaining = machine.remainingSec === null ? null : Math.max(0, machine.remainingSec - elapsedSec);
   const stateLabel = machine.state === null ? t.states.unknown : t.states[machine.state];
   const synced = machine.passwordSynced && machine.policySynced;
+  // Inline rename (Electron does not support window.prompt): null = not editing
+  const [newName, setNewName] = useState<string | null>(null);
 
-  const rename = async () => {
-    const name = window.prompt(t.machines.renamePrompt, machine.name);
-    if (name === null) return;
-    const result = await api.renameMachine(machine.id, name);
+  const saveName = async () => {
+    if (newName === null) return;
+    const result = await api.renameMachine(machine.id, newName);
     onMessage(result.ok ? null : t.errorPrefix + result.error);
+    if (result.ok) setNewName(null);
   };
   const remove = async () => {
     if (!window.confirm(t.machines.confirmRemove(machine.name))) return;
@@ -109,7 +120,20 @@ function MachineRow({ machine, elapsedSec, checked, onToggle, onMessage }: RowPr
     <tr className={checked ? "selected" : ""}>
       <td><input type="checkbox" checked={checked} onChange={onToggle} aria-label={machine.name} /></td>
       <td>
-        <strong>{machine.name}</strong>
+        {newName === null ? (
+          <strong>{machine.name}</strong>
+        ) : (
+          <span className="rename">
+            <input value={newName} autoFocus maxLength={80} aria-label={t.machines.rename}
+              onChange={(e) => setNewName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") void saveName();
+                if (e.key === "Escape") setNewName(null);
+              }} />
+            <button onClick={() => void saveName()}>{t.machines.save}</button>
+            <button className="link" onClick={() => setNewName(null)}>{t.machines.cancel}</button>
+          </span>
+        )}
         <div className="muted small">{machine.hostname} · {machine.id.slice(0, 8)}</div>
       </td>
       <td>
@@ -122,7 +146,7 @@ function MachineRow({ machine, elapsedSec, checked, onToggle, onMessage }: RowPr
       <td>{machine.online ? t.machines.online : formatTime(machine.lastSeen, t.machines.never)}</td>
       <td className={synced ? "ok" : "pending"}>{synced ? t.machines.synced : t.machines.pending}</td>
       <td className="actions">
-        <button className="link" onClick={() => void rename()}>{t.machines.rename}</button>
+        <button className="link" onClick={() => setNewName(machine.name)}>{t.machines.rename}</button>
         <button className="link danger" onClick={() => void remove()}>{t.machines.remove}</button>
       </td>
     </tr>
