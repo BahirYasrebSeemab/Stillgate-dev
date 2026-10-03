@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { nativeImage, net } from "electron";
 import { writeJsonAtomic, type Logger } from "@asd/shared/node";
-import { largestPngInIco } from "./ico";
+import { bestImageInIco } from "./ico";
 import { findIconUrls } from "./icon-links";
 
 // Fetches the icon of an allowed website for its launcher tile.
@@ -18,7 +18,7 @@ import { findIconUrls } from "./icon-links";
 // Lessons from testing on Windows (Electron 44):
 //   - passing ANY abort signal to net.fetch makes it fail at once -> the time limit is a race
 //   - the ASD network can be slow (homepages took 5-10 s) -> generous time limit + cache
-//   - nativeImage can't read .ico -> the PNG inside the .ico is extracted (ico.ts)
+//   - nativeImage can't read .ico -> ico.ts extracts the PNG or decodes the bitmap inside
 
 const TIMEOUT_MS = 20_000;
 const MAX_ICON_BYTES = 256 * 1024;
@@ -138,8 +138,10 @@ async function fetchIcon(url: string, log: Logger): Promise<string | null> {
     if (bytes.length === 0 || bytes.length > MAX_ICON_BYTES) return null;
     let image = nativeImage.createFromBuffer(bytes);
     if (image.isEmpty()) {
-      const png = largestPngInIco(bytes); // .ico files: use the PNG inside
-      if (png !== null) image = nativeImage.createFromBuffer(png);
+      // .ico file: use the PNG inside, or the decoded bitmap pixels
+      const ico = bestImageInIco(bytes);
+      if (ico?.kind === "png") image = nativeImage.createFromBuffer(ico.png);
+      if (ico?.kind === "bgra") image = nativeImage.createFromBitmap(ico.pixels, { width: ico.width, height: ico.height });
     }
     if (image.isEmpty()) {
       log.debug("site_icon_undecodable", { url, bytes: bytes.length });
