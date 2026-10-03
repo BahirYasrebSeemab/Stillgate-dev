@@ -36,3 +36,7 @@ D1–D20 were made in `PLAN.md` (Part 2). This file is the up-to-date list, incl
 | 30 | Pairing strings tolerate surrounding quotes/spaces. | Real Windows shells passed the quotes through as part of the text. |
 | 31 | Bun test timeout 20 s (`bunfig.toml`). | The real-scrypt tests once exceeded Bun's 5 s default on a busy machine. |
 | 32 | Kiosk user names must be English letters/digits (`[A-Za-z0-9._ -]`). | `reg.exe` output uses the OEM code page; non-ASCII names and paths could be misread. `check-pc.ps1` warns. |
+| 33 | Kiosk = **Windows 8 Start screen** style: navy background, flat square tiles (apps square, sites wide), groups side by side, horizontal scrolling (mouse wheel scrolls sideways), fly-in animation; locked page has slow burgundy/blue wave lines. Manager: no rounded corners. | Bahir's design choice (2026-10-03). |
+| 34 | Website tile icons: the kiosk **main process** reads the site's `<link rel=icon>` tags, downloads (public addresses only, 20 s, 256 KB), decodes `.ico` itself (PNG or bitmap entries), re-encodes to PNG, caches on disk. | Tested on real sites: `/favicon.ico` often 403/404; Electron can't decode `.ico`; `net.fetch` breaks with abort signals; the network is slow. |
+| 35 | Electron **fuses** + refuse debugger switches in installed builds. | Security review: otherwise the always-allowed kiosk folder could run arbitrary code. |
+| 36 | No remote "kill switch". | A remote way to disable deployed systems is a backdoor and a risk in itself; the system is LAN-only by design. |

@@ -25,6 +25,12 @@ Commits: `feat: add shared protocol, state machine, crypto` → `feat: add agent
 ## Windows copy
 `/mnt/c/yasreb/yasreb_projects/stillgate` (= `C:\yasreb\yasreb_projects\stillgate`) is a git clone of the WSL repo. Workflow: change + commit in WSL, then `git.exe pull` there, then build/test with Windows `bun`/`node` via `cmd.exe /c`. Deploy folder for the test day: `C:\yasreb\yasreb_projects\stillgate-deploy`.
 
+## 2026-10-03
+- Test day at ASD went through phases 1-3 on one PC; found and fixed: kiosk not full screen on Windows; manager Unlock/Extend/Rename did nothing (Electron has no window.prompt).
+- Redesign: Windows 8 Start-screen kiosk (navy, square tiles, horizontal scroll, waves), real website icons, square manager.
+- Security review done (docs/SECURITY.md "Security review: 2026-10-03"): Electron fuses, icon SSRF block, connection cap, permission deny.
+- Deploy folder updated (agent + kiosk-shell + manager installer). The agent and kiosk-shell MUST be updated together (shell protocol now sends site URLs).
+
 ## Next steps
 1. Bahir runs `docs/TEST-DAY.md` on ONE visitor PC at ASD and writes down ✅/❌ + logs.
 2. Fix what it finds; then roll out to the other PCs.
