@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 120" width="320" height="120">
   <!-- PLACEHOLDER logo (not the official American Spaces logo).
-       Replace this file with the real logo: keep the name logo.svg, or tell Claude the new file name. -->
+       Replace this file with the real logo (keep the file name logo.svg). -->
   <rect x="0" y="0" width="320" height="120" fill="#ffffff"/>
   <rect x="0" y="0" width="12" height="120" fill="#7b1e3a"/>
   <text x="32" y="56" font-family="Segoe UI, sans-serif" font-size="32" font-weight="700" fill="#1b2a4e" textLength="272" lengthAdjust="spacingAndGlyphs">AMERICAN SPACE</text>
