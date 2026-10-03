@@ -56,14 +56,15 @@ export class SiteIcons {
   }
 
   private async load(url: string, origin: string): Promise<string | null> {
-    const page = await fetchPage(url);
+    const page = await fetchPage(url, this.log);
     const candidates = [
       ...(page === null ? [] : findIconUrls(page.html, page.finalUrl)),
       ...(page === null ? [] : [`${new URL(page.finalUrl).origin}/favicon.ico`]),
       `${origin}/favicon.ico`,
     ];
+    this.log.debug("site_icon_candidates", { origin, pageLoaded: page !== null, candidates });
     for (const candidate of new Set(candidates)) {
-      const icon = await fetchIcon(candidate);
+      const icon = await fetchIcon(candidate, this.log);
       if (icon !== null) return icon;
     }
     this.log.info("site_icon_not_found", { origin });
@@ -109,21 +110,29 @@ function fetchWithTimeout(url: string): Promise<Response> {
   return Promise.race([net.fetch(url, { redirect: "follow" }), timeout]).finally(() => clearTimeout(timer));
 }
 
-async function fetchPage(url: string): Promise<{ html: string; finalUrl: string } | null> {
+async function fetchPage(url: string, log: Logger): Promise<{ html: string; finalUrl: string } | null> {
   try {
     const response = await fetchWithTimeout(url);
-    if (!response.ok || !(response.headers.get("content-type") ?? "").includes("html")) return null;
+    const type = response.headers.get("content-type") ?? "";
+    if (!response.ok || !type.includes("html")) {
+      log.debug("site_page_unusable", { url, status: response.status, type });
+      return null;
+    }
     const bytes = Buffer.from(await response.arrayBuffer());
     return { html: bytes.subarray(0, MAX_PAGE_BYTES).toString("utf8"), finalUrl: response.url || url };
-  } catch {
+  } catch (error) {
+    log.debug("site_page_failed", { url, error });
     return null;
   }
 }
 
-async function fetchIcon(url: string): Promise<string | null> {
+async function fetchIcon(url: string, log: Logger): Promise<string | null> {
   try {
     const response = await fetchWithTimeout(url);
-    if (!response.ok) return null;
+    if (!response.ok) {
+      log.debug("site_icon_http_error", { url, status: response.status });
+      return null;
+    }
     if (Number(response.headers.get("content-length") ?? 0) > MAX_ICON_BYTES) return null;
     const bytes = Buffer.from(await response.arrayBuffer());
     if (bytes.length === 0 || bytes.length > MAX_ICON_BYTES) return null;
@@ -132,10 +141,14 @@ async function fetchIcon(url: string): Promise<string | null> {
       const png = largestPngInIco(bytes); // .ico files: use the PNG inside
       if (png !== null) image = nativeImage.createFromBuffer(png);
     }
-    if (image.isEmpty()) return null;
+    if (image.isEmpty()) {
+      log.debug("site_icon_undecodable", { url, bytes: bytes.length });
+      return null;
+    }
     return image.resize({ width: ICON_SIZE, height: ICON_SIZE, quality: "best" }).toDataURL();
-  } catch {
-    return null; // offline, timeout, blocked, not an image...
+  } catch (error) {
+    log.debug("site_icon_failed", { url, error }); // offline, timeout, blocked...
+    return null;
   }
 }
 
