@@ -21,8 +21,15 @@ export interface KioskApi {
   launchApp(id: AppId): Promise<Result<true, string>>;
   openSite(id: SiteId): Promise<Result<true, string>>;
   appIcon(id: AppId): Promise<string | null>; // data: URL of the program's icon
+  siteIcon(id: SiteId): Promise<string | null>; // data: URL of the website's icon
   restore(password: string): Promise<Result<true, RestoreFailure>>;
 }
 
-export type InvokeChannel = "kiosk:view" | "kiosk:launch" | "kiosk:open" | "kiosk:icon" | "kiosk:restore";
+export type InvokeChannel =
+  | "kiosk:view"
+  | "kiosk:launch"
+  | "kiosk:open"
+  | "kiosk:icon"
+  | "kiosk:siteIcon"
+  | "kiosk:restore";
 export type PushChannel = "kiosk:update";

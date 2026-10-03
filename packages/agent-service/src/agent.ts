@@ -180,7 +180,7 @@ function shellState(runner: StateRunner, config: ConfigStore, link: ServerLink |
           ...(app.iconPath === undefined ? {} : { iconPath: app.iconPath }),
         }))
       : [],
-    sites: unlocked ? policy.sites.map((site) => ({ id: site.id, name: site.name })) : [],
+    sites: unlocked ? policy.sites.map((site) => ({ id: site.id, name: site.name, url: siteUrl(site.pattern) })) : [],
   };
 }
 

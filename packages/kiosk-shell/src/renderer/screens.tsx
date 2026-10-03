@@ -4,13 +4,21 @@ import type { RestoreFailure } from "../common/api";
 import logoUrl from "../../assets/logo.svg";
 import { api, formatClock } from "./api";
 import { t } from "./strings";
+import { Waves } from "./Waves";
+
+// Flat square tiles in the style of the Windows 8 Start screen
+const TILE_COLORS = ["#7b1e3a", "#1b2a4e", "#00788a", "#a4373a", "#2d5f8b", "#5c2d91", "#00825a", "#b04a1c"];
+const tileColor = (index: number) => TILE_COLORS[index % TILE_COLORS.length];
 
 export function LockedScreen({ serviceDown }: { readonly serviceDown: boolean }) {
   return (
     <div className="screen locked">
-      <img className="logo" src={logoUrl} alt="ASD" />
-      <h1>{t.locked.title}</h1>
-      <p className="big">{t.locked.askDesk}</p>
+      <Waves />
+      <div className="locked-content">
+        <img className="logo" src={logoUrl} alt="American Space Dushanbe" />
+        <h1>{t.locked.title}</h1>
+        <p className="big">{t.locked.askDesk}</p>
+      </div>
       {serviceDown && <p className="small-note">{t.locked.serviceDown}</p>}
     </div>
   );
@@ -19,8 +27,10 @@ export function LockedScreen({ serviceDown }: { readonly serviceDown: boolean })
 export function MaintenanceScreen() {
   return (
     <div className="screen locked">
-      <h1>{t.maintenance.title}</h1>
-      <p className="big">{t.maintenance.detail}</p>
+      <div className="locked-content">
+        <h1>{t.maintenance.title}</h1>
+        <p className="big">{t.maintenance.detail}</p>
+      </div>
     </div>
   );
 }
@@ -38,7 +48,7 @@ export function Launcher({ state, remainingSec }: LauncherProps) {
   return (
     <div className="screen launcher">
       <header>
-        <img className="logo small" src={logoUrl} alt="ASD" />
+        <img className="logo small" src={logoUrl} alt="American Space Dushanbe" />
         <div className={`clock ${warn ? "warn" : ""}`}>
           <span>{t.launcher.timeLeft}</span>
           <strong>{formatClock(remainingSec)}</strong>
@@ -51,11 +61,9 @@ export function Launcher({ state, remainingSec }: LauncherProps) {
         <section>
           <h2>{t.launcher.apps}</h2>
           <div className="tiles">
-            {state.apps.map((app) => (
-              <button key={app.id} className="tile" onClick={() => void run(() => api.launchApp(app.id))}>
-                <AppIcon id={app.id} />
-                <span>{app.name}</span>
-              </button>
+            {state.apps.map((app, index) => (
+              <Tile key={app.id} name={app.name} color={tileColor(index)} loadIcon={() => api.appIcon(app.id)}
+                onOpen={() => void run(() => api.launchApp(app.id))} />
             ))}
           </div>
         </section>
@@ -64,11 +72,9 @@ export function Launcher({ state, remainingSec }: LauncherProps) {
         <section>
           <h2>{t.launcher.sites}</h2>
           <div className="tiles">
-            {state.sites.map((site) => (
-              <button key={site.id} className="tile site" onClick={() => void run(() => api.openSite(site.id))}>
-                <span className="globe">🌐</span>
-                <span>{site.name}</span>
-              </button>
+            {state.sites.map((site, index) => (
+              <Tile key={site.id} name={site.name} color={tileColor(index + state.apps.length)}
+                loadIcon={() => api.siteIcon(site.id)} fallback="🌐" onOpen={() => void run(() => api.openSite(site.id))} />
             ))}
           </div>
         </section>
@@ -77,16 +83,33 @@ export function Launcher({ state, remainingSec }: LauncherProps) {
   );
 }
 
-function AppIcon({ id }: { readonly id: ShellState["apps"][number]["id"] }) {
-  const [src, setSrc] = useState<string | null>(null);
+type TileProps = {
+  readonly name: string;
+  readonly color: string | undefined;
+  readonly loadIcon: () => Promise<string | null>;
+  readonly onOpen: () => void;
+  readonly fallback?: string;
+};
+
+function Tile({ name, color, loadIcon, onOpen, fallback }: TileProps) {
+  const [icon, setIcon] = useState<string | null>(null);
   useEffect(() => {
     let active = true;
-    void api.appIcon(id).then((icon) => active && setSrc(icon));
+    void loadIcon().then((data) => active && setIcon(data));
     return () => {
       active = false;
     };
-  }, [id]);
-  return src === null ? <span className="icon-placeholder" /> : <img className="icon" src={src} alt="" />;
+    // Load the icon once per tile (loadIcon is a new function on every render, so it is not a dependency)
+  }, [name]);
+
+  return (
+    <button className="tile" style={{ backgroundColor: color }} onClick={onOpen}>
+      <span className="tile-icon">
+        {icon !== null ? <img src={icon} alt="" /> : <span className="tile-fallback">{fallback ?? name.slice(0, 1)}</span>}
+      </span>
+      <span className="tile-name">{name}</span>
+    </button>
+  );
 }
 
 export function PasswordPanel({ onClose }: { readonly onClose: () => void }) {
@@ -133,3 +156,4 @@ function failureText(failure: RestoreFailure): string {
       return t.password.unavailable;
   }
 }
+

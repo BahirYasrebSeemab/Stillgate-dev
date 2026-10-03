@@ -5,6 +5,7 @@ import { z } from "zod";
 import type { InvokeChannel, KioskView, RestoreFailure } from "../common/api";
 import type { AgentClient } from "./agent-client";
 import { launchProgram, openInEdge } from "./launch";
+import { SiteIcons } from "./site-icons";
 import { isTrustedSender } from "./window";
 
 // The UI can only send ids and the typed password. The agent decides whether they are allowed
@@ -14,6 +15,7 @@ const Password = z.string().min(1).max(MAX_PASSWORD_CHARS);
 
 export function registerIpc(agent: AgentClient, view: () => KioskView, log: Logger): void {
   const icons = new Map<string, string | null>();
+  const siteIcons = new SiteIcons(log);
 
   handle("kiosk:view", () => view());
 
@@ -46,6 +48,13 @@ export function registerIpc(agent: AgentClient, view: () => KioskView, log: Logg
       icons.set(source, icon === null || icon.isEmpty() ? null : icon.toDataURL());
     }
     return icons.get(source) ?? null;
+  });
+
+  // Website icons only for sites the agent currently lists (never an address from the page)
+  handle("kiosk:siteIcon", async (input: unknown): Promise<string | null> => {
+    const id = SiteId.safeParse(input);
+    const site = id.success ? agent.state?.sites.find((s) => s.id === id.data) : undefined;
+    return site === undefined ? null : siteIcons.get(site.url);
   });
 
   handle("kiosk:restore", async (input: unknown): Promise<Result<true, RestoreFailure>> => {

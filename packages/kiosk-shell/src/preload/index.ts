@@ -16,6 +16,7 @@ const api: KioskApi = {
   launchApp: (id) => invoke("kiosk:launch", id),
   openSite: (id) => invoke("kiosk:open", id),
   appIcon: (id) => invoke("kiosk:icon", id),
+  siteIcon: (id) => invoke("kiosk:siteIcon", id),
   restore: (password) => invoke("kiosk:restore", password),
 };
 

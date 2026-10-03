@@ -27,7 +27,8 @@ export const ShellState = z.strictObject({
   remainingSec: z.int().nonnegative().nullable(),
   serverOnline: z.boolean(),
   apps: z.array(z.strictObject({ id: AppId, name: Name, exePath: z.string(), iconPath: z.string().optional() })),
-  sites: z.array(z.strictObject({ id: SiteId, name: Name })),
+  // url: where the site opens (also used to fetch its icon); visitors see it in Edge anyway
+  sites: z.array(z.strictObject({ id: SiteId, name: Name, url: z.string().max(300) })),
 });
 export type ShellState = z.infer<typeof ShellState>;
 
