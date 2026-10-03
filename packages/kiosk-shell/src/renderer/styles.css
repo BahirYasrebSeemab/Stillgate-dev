@@ -1,9 +1,12 @@
-/* Kiosk look: white background, flat square tiles (Windows 8 Start screen style),
-   burgundy + navy accents. No rounded corners anywhere. */
+/* Kiosk look: navy background, flat square tiles (Windows 8 Start screen style),
+   burgundy accents. No rounded corners anywhere. */
 :root {
-  --bg: #ffffff;
-  --text: #1b2a4e;
-  --muted: #5d6b82;
+  --bg: #13213f;
+  --text: #ffffff;
+  --muted: #b8c4dc;
+  --light: #6f9bd1;
+  --wave-burgundy: #c2416b; /* brighter than --burgundy so it shows on navy */
+  --wave-light: #6f9bd1;
   --burgundy: #7b1e3a;
   --navy: #1b2a4e;
   --warn: #b7791f;
@@ -20,10 +23,10 @@ html, body, #root { margin: 0; height: 100%; overflow: hidden; background: var(-
 
 /* ---------- Locked page ---------- */
 .locked { align-items: center; justify-content: center; text-align: center; }
-.locked-content { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 32px 48px; background: rgba(255, 255, 255, 0.82); }
-.logo { width: 320px; height: auto; margin-bottom: 12px; }
-.logo.small { width: 200px; margin: 0; }
-h1 { font-size: 38px; font-weight: 600; margin: 0; color: var(--navy); }
+.locked-content { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 32px 48px; }
+.logo { width: 320px; height: auto; margin-bottom: 12px; background: #fff; padding: 14px 18px; }
+.logo.small { width: 200px; margin: 0; padding: 8px 12px; }
+h1 { font-size: 38px; font-weight: 300; margin: 0; color: #fff; }
 .big { font-size: 24px; color: var(--muted); max-width: 900px; margin: 0; }
 .small-note { position: fixed; bottom: 16px; right: 20px; font-size: 13px; color: var(--muted); z-index: 1; }
 
@@ -37,8 +40,8 @@ h1 { font-size: 38px; font-weight: 600; margin: 0; color: var(--navy); }
 .launcher { overflow: hidden; }
 .launcher header { display: flex; justify-content: space-between; align-items: flex-end; padding: 36px 56px 0 116px; }
 .clock { display: flex; flex-direction: column; align-items: flex-end; color: var(--muted); }
-.clock strong { font-size: 44px; font-weight: 300; color: var(--navy); font-variant-numeric: tabular-nums; }
-.clock.warn strong { color: var(--burgundy); font-weight: 600; }
+.clock strong { font-size: 44px; font-weight: 300; color: #fff; font-variant-numeric: tabular-nums; }
+.clock.warn strong { color: #ffb4c4; font-weight: 600; }
 .banner { margin: 16px 56px 0 116px; padding: 12px 20px; background: var(--warn); color: #fff; font-size: 18px; }
 .banner.error { background: var(--red); }
 .start-empty { padding: 40px 116px; }
@@ -46,10 +49,10 @@ h1 { font-size: 38px; font-weight: 600; margin: 0; color: var(--navy); }
 /* Horizontal strip: groups side by side, scrolls left/right */
 .start { flex: 1; display: flex; gap: 80px; align-items: flex-start; padding: 28px 116px 24px; overflow-x: auto; overflow-y: hidden; scroll-behavior: smooth; }
 .start::-webkit-scrollbar { height: 10px; }
-.start::-webkit-scrollbar-thumb { background: #c6ccd6; }
-.start::-webkit-scrollbar-track { background: #eef1f5; }
+.start::-webkit-scrollbar-thumb { background: #4a5f8a; }
+.start::-webkit-scrollbar-track { background: #1b2c52; }
 .group { flex: none; }
-.group h2 { font-size: 22px; font-weight: 300; color: var(--navy); margin: 0 0 18px; }
+.group h2 { font-size: 22px; font-weight: 300; color: #fff; margin: 0 0 18px; }
 /* Tiles fill each COLUMN top to bottom, then start a new column to the right (like Windows 8) */
 .group-tiles { display: grid; grid-auto-flow: column; grid-auto-columns: 150px; gap: 8px; }
 
@@ -70,10 +73,11 @@ h1 { font-size: 38px; font-weight: 600; margin: 0; color: var(--navy); }
 .tile.wide .tile-name { left: 112px; bottom: auto; top: 54px; font-size: 20px; font-weight: 300; }
 
 /* ---------- Hotkey password panel ---------- */
-.overlay { position: fixed; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center; background: rgba(27, 42, 78, 0.55); }
-.panel { width: 400px; padding: 28px; background: #fff; border-top: 6px solid var(--burgundy); display: flex; flex-direction: column; gap: 12px; }
+.overlay { position: fixed; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center; background: rgba(5, 10, 25, 0.6); }
+.panel { width: 400px; padding: 28px; background: #fff; color: var(--navy); border-top: 6px solid var(--burgundy); display: flex; flex-direction: column; gap: 12px; }
 .panel h2 { margin: 0; }
-.panel label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--muted); }
+.panel h2 { color: var(--navy); }
+.panel label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: #5d6b82; }
 .panel input { font: inherit; font-size: 18px; padding: 8px 10px; border: 2px solid #c9d2dc; outline: none; }
 .panel input:focus { border-color: var(--navy); }
 .panel .message { margin: 0; color: var(--red); }

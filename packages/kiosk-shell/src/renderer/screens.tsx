@@ -7,7 +7,8 @@ import { t } from "./strings";
 import { Waves } from "./Waves";
 
 // Flat square tiles in the style of the Windows 8 Start screen
-const TILE_COLORS = ["#7b1e3a", "#1b2a4e", "#00788a", "#a4373a", "#2d5f8b", "#5c2d91", "#00825a", "#b04a1c"];
+// (no navy tile: it would disappear on the navy background)
+const TILE_COLORS = ["#7b1e3a", "#2d6fb5", "#00788a", "#a4373a", "#3a7f4a", "#5c2d91", "#b04a1c", "#4a5f8a"];
 const tileColor = (index: number) => TILE_COLORS[index % TILE_COLORS.length];
 
 export function LockedScreen({ serviceDown }: { readonly serviceDown: boolean }) {

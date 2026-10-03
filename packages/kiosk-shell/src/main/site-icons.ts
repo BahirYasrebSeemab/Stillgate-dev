@@ -53,9 +53,21 @@ export class SiteIcons {
   }
 }
 
+// NOTE: AbortSignal.timeout() aborts at once inside Electron's main process (seen on Windows,
+// Electron 44), so a plain timer + AbortController is used instead.
+async function fetchWithTimeout(url: string): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  try {
+    return await net.fetch(url, { signal: controller.signal, redirect: "follow" });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function fetchPage(url: string): Promise<{ html: string; finalUrl: string } | null> {
   try {
-    const response = await net.fetch(url, { signal: AbortSignal.timeout(TIMEOUT_MS), redirect: "follow" });
+    const response = await fetchWithTimeout(url);
     if (!response.ok || !(response.headers.get("content-type") ?? "").includes("html")) return null;
     if (Number(response.headers.get("content-length") ?? 0) > MAX_PAGE_BYTES) return null;
     const bytes = Buffer.from(await response.arrayBuffer());
@@ -67,7 +79,7 @@ async function fetchPage(url: string): Promise<{ html: string; finalUrl: string 
 
 async function fetchIcon(url: string): Promise<string | null> {
   try {
-    const response = await net.fetch(url, { signal: AbortSignal.timeout(TIMEOUT_MS), redirect: "follow" });
+    const response = await fetchWithTimeout(url);
     if (!response.ok) return null;
     if (Number(response.headers.get("content-length") ?? 0) > MAX_ICON_BYTES) return null;
     const bytes = Buffer.from(await response.arrayBuffer());
