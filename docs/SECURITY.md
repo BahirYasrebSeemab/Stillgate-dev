@@ -30,3 +30,34 @@
 - **Pairing strings are IPv4 only.**
 - **The manager PC itself** is trusted: anyone using its Windows account can unlock PCs.
 - Everything that touches Windows is **untested** until `TESTING.md` is done.
+
+## Security review: 2026-10-03
+Reviewed: manager server and IPC, agent (server link, shell IPC, password, registry/exec, enforcer, CLI, control files), kiosk shell (IPC, launching, site icons, window), both Electron setups, install scripts, dependencies.
+
+### Fixed in this review
+| # | Finding | Severity | Fix |
+|---|---|---|---|
+| 1 | Packaged Electron apps could be started as plain Node.js (`ELECTRON_RUN_AS_NODE`), with `NODE_OPTIONS`, or with `--inspect`/remote debugging. Because the agent always allows the kiosk-shell folder, that would have been a way to run code the enforcer never closes. | High | Electron **fuses** set in both `electron-builder.yml` (no run-as-node, no NODE_OPTIONS, no inspect, only load app.asar, asar integrity check); installed apps also refuse to start with any debugger switch (`hasDebugSwitch`). |
+| 2 | Site icons: an allowed site's HTML chooses the icon address, so it could have made the kiosk send requests into the ASD network (routers, the manager PC). | Medium | Icons only from public addresses or the site's own host (`isAllowedIconUrl`, tested); downloads are size-limited and re-encoded by Electron. |
+| 3 | The manager window had no "deny all permissions" rule. | Low | Added (the kiosk already had it). |
+| 4 | Unlimited half-open connections to the manager server could tie up the manager PC. | Low | At most 32 connections that have not logged in yet; each still has 10 s to log in. |
+
+### Checked and OK
+- Every network, IPC, file and CLI input is validated with strict zod schemas and size limits; unknown messages are rejected.
+- Agent login: HMAC challenge-response, constant-time compares, unknown machines also get a challenge, failures counted per IP.
+- Certificate pinning by SHA-256 fingerprint, checked before the first message is sent (tested with a wrong certificate).
+- Pairing codes: 8 characters from 31, valid 10 minutes, single use, plus the per-IP failure limit.
+- Restore password: salted scrypt, stored parameters, constant-time compare, lockout doubling to 15 min, never logged.
+- All Windows tools are called by absolute System32 path with argument arrays (no shell, no injection). Registry values come from validated data.
+- Electron: `contextIsolation`, `sandbox`, no Node in pages, strict CSP (no network from pages), navigation and new windows blocked, IPC only from our own page, DevTools only in development.
+- Logs redact secret-looking fields; no secrets in the repo (secret scan clean).
+- Data folders: agent data is SYSTEM + Administrators only (kiosk user can read just the token folder); program files under `C:\Program Files` are read-only for users.
+
+### Remaining risks (accepted, know about them)
+- **Loopback trust:** the kiosk shell trusts whatever answers on 127.0.0.1:47831. A program already running as the kiosk user could start first and pretend to be the agent; it could only show a fake launcher and start programs with kiosk-user rights, which that program already had. In **enforce** mode the enforcer closes such programs.
+- **Restore lockout can be triggered by a visitor** (5 wrong guesses → 60 s, doubling to 15 min). That's annoying for staff, but not a way in. The Shift-at-boot admin path and `RECOVERY.md` still work.
+- **Site icons are downloaded from the internet** by the kiosk PC (once, then cached). Those websites see the request, and Chromium's image decoders process data from the internet inside the kiosk process (kiosk-user rights only).
+- **The agent's pairing secret** sits in `C:\ProgramData\AsdLabLock\config.json`, readable by Administrators. Anyone with the admin account can impersonate that PC to the manager. (Admins can undo everything anyway.)
+- **No code signing** of the `.exe` files: Windows SmartScreen may warn, and file integrity relies on the `Program Files` permissions.
+- **Build-tool advisory:** `http-cache-semantics` (GHSA-ch52-4w7c-c8xp, "≤ 4.2.0", no fixed release yet) is used only by Electron/electron-builder download tools on the developer PC and is not shipped in the apps. Re-check with `bun audit` later.
+- Everything in the "What is NOT protected" list above still applies (BIOS, Safe Mode, physical access, the admin account).

@@ -21,3 +21,12 @@ nsis:
   perMachine: true
   allowToChangeInstallationDirectory: false
   createDesktopShortcut: true
+# Security: permanently switch off Electron features an attacker could use on the PC
+# (run the app as plain Node.js, NODE_OPTIONS, --inspect debugging, loading code outside app.asar)
+electronFuses:
+  runAsNode: false
+  enableNodeOptionsEnvironmentVariable: false
+  enableNodeCliInspectArguments: false
+  onlyLoadAppFromAsar: true
+  enableEmbeddedAsarIntegrityValidation: true
+  enableCookieEncryption: true

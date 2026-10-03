@@ -1,5 +1,6 @@
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { hasDebugSwitch } from "@asd/shared";
 import { app, type BrowserWindow } from "electron";
 import { agentDataDir, createLogger, shellTokenFile } from "@asd/shared/node";
 import type { KioskView, PushChannel } from "../common/api";
@@ -20,6 +21,9 @@ let window: BrowserWindow | null = null;
 if (process.env["ASD_DEV_CAPTURE_DIR"] !== undefined && !app.isPackaged) {
   app.commandLine.appendSwitch("disable-features", "CalculateNativeWinOcclusion");
 }
+
+// Security: an installed copy never starts with a debugger / remote-control switch
+if (app.isPackaged && hasDebugSwitch(process.argv)) app.exit(1);
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();

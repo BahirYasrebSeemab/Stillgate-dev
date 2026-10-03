@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { findIconUrls } from "./icon-links";
+import { findIconUrls, isAllowedIconUrl } from "./icon-links";
 
 describe("findIconUrls", () => {
   it("prefers apple-touch-icon and resolves relative links", () => {
@@ -27,5 +27,30 @@ describe("findIconUrls", () => {
 
   it("returns nothing for pages without icon links", () => {
     expect(findIconUrls("<html><body>hi</body></html>", "https://example.org/")).toEqual([]);
+  });
+});
+
+describe("isAllowedIconUrl", () => {
+  it("allows public hosts and the site's own host", () => {
+    expect(isAllowedIconUrl("https://cdn.example.net/i.png", "example.org")).toBe(true);
+    expect(isAllowedIconUrl("https://8.8.8.8/i.png", "example.org")).toBe(true);
+    expect(isAllowedIconUrl("http://intranet.local/i.png", "intranet.local")).toBe(true);
+  });
+
+  it("refuses local-network and odd addresses", () => {
+    for (const url of [
+      "http://192.168.1.1/x.png",
+      "http://10.0.0.5/x.png",
+      "http://172.20.1.1/x.png",
+      "http://127.0.0.1:47831/x",
+      "http://169.254.169.254/latest",
+      "http://localhost/x.png",
+      "http://router/x.png",
+      "http://printer.local/x.png",
+      "http://[::1]/x.png",
+      "file:///C:/x.png",
+    ]) {
+      expect(isAllowedIconUrl(url, "example.org")).toBe(false);
+    }
   });
 });

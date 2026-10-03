@@ -40,6 +40,10 @@ export type AgentServerDeps = {
   readonly onOffline: (id: MachineId) => void;
 };
 
+// At most this many connections may be open WITHOUT having logged in yet (each has 10 s to do so).
+// Stops a flood of half-open connections from using up the manager PC.
+const MAX_PENDING_CONNECTIONS = 32;
+
 type Session = {
   readonly socket: WebSocket;
   readonly ip: string;
@@ -54,6 +58,7 @@ export class AgentServer {
   private wss: WebSocketServer | null = null;
   private pinger: NodeJS.Timeout | null = null;
   private readonly online = new Map<MachineId, Session>();
+  private pendingCount = 0;
 
   constructor(private readonly deps: AgentServerDeps) {}
 
@@ -98,6 +103,17 @@ export class AgentServer {
       socket.terminate();
       return;
     }
+    if (this.pendingCount >= MAX_PENDING_CONNECTIONS) {
+      this.deps.log.warn("agent_too_many_pending", { ip });
+      socket.terminate();
+      return;
+    }
+    this.pendingCount += 1;
+    let counted = true;
+    const leavePending = () => {
+      if (counted) this.pendingCount -= 1;
+      counted = false;
+    };
     const session: Session = { socket, ip, phase: "new", machineId: null, nonce: null, alive: true };
     const authTimer = setTimeout(() => {
       if (session.phase !== "online") socket.terminate();
@@ -105,6 +121,7 @@ export class AgentServer {
 
     socket.on("message", (data) => {
       session.alive = true;
+      if (session.phase === "online") leavePending();
       this.onMessage(session, data.toString()).catch((error: unknown) => {
         this.deps.log.error("agent_message_failed", { ip, error });
         socket.terminate();
@@ -114,6 +131,7 @@ export class AgentServer {
     socket.on("error", () => undefined);
     socket.on("close", () => {
       clearTimeout(authTimer);
+      leavePending();
       const id = session.machineId;
       if (session.phase === "online" && id !== null && this.online.get(id) === session) {
         this.online.delete(id);

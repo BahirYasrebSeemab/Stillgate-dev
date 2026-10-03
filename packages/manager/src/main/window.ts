@@ -1,5 +1,5 @@
 import { join } from "node:path";
-import { BrowserWindow, app, shell } from "electron";
+import { BrowserWindow, app, session, shell } from "electron";
 
 // The manager window, locked down like a kiosk page even though only staff use it:
 // no Node in the page, sandboxed renderer, no navigation away, no new windows.
@@ -34,6 +34,8 @@ export function createManagerWindow(): BrowserWindow {
     return { action: "deny" };
   });
 
+  // The manager UI never needs camera, microphone, notifications, etc.
+  session.defaultSession.setPermissionRequestHandler((_wc, _permission, callback) => callback(false));
   window.once("ready-to-show", () => window.show());
   if (DEV_SERVER_URL !== undefined && !app.isPackaged) void window.loadURL(DEV_SERVER_URL);
   else void window.loadFile(join(__dirname, "..", "renderer", "index.html"));

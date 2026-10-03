@@ -3,6 +3,7 @@
 export * from "./allowlist";
 export * from "./browser-policy";
 export * from "./constants";
+export * from "./debug-switches";
 export * from "./errors";
 export * from "./ids";
 export * from "./lines";

@@ -3,11 +3,12 @@ import { join } from "node:path";
 import { nativeImage, net } from "electron";
 import { writeJsonAtomic, type Logger } from "@asd/shared/node";
 import { bestImageInIco } from "./ico";
-import { findIconUrls } from "./icon-links";
+import { findIconUrls, isAllowedIconUrl } from "./icon-links";
 
 // Fetches the icon of an allowed website for its launcher tile.
 // Safety rules:
 //   - only called for sites the agent currently allows (see ipc.ts), only http(s)
+//   - icon addresses taken from the page must be public (no requests into the local network)
 //   - time limit, at most 256 KB per icon, the kiosk session has no cookies of ours
 //   - the bytes are decoded and RE-ENCODED by Electron (nativeImage -> PNG data URL),
 //     so the page only ever gets a clean image, and its CSP still allows no network access
@@ -62,8 +63,10 @@ export class SiteIcons {
       ...(page === null ? [] : [`${new URL(page.finalUrl).origin}/favicon.ico`]),
       `${origin}/favicon.ico`,
     ];
-    this.log.debug("site_icon_candidates", { origin, pageLoaded: page !== null, candidates });
-    for (const candidate of new Set(candidates)) {
+    const siteHost = new URL(origin).hostname;
+    const allowed = [...new Set(candidates)].filter((candidate) => isAllowedIconUrl(candidate, siteHost));
+    this.log.debug("site_icon_candidates", { origin, pageLoaded: page !== null, candidates: allowed });
+    for (const candidate of allowed) {
       const icon = await fetchIcon(candidate, this.log);
       if (icon !== null) return icon;
     }

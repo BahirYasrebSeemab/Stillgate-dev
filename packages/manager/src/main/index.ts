@@ -1,5 +1,6 @@
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { hasDebugSwitch } from "@asd/shared";
 import { Menu, Tray, app, nativeImage, type BrowserWindow } from "electron";
 import { createLogger } from "@asd/shared/node";
 import type { PushChannel } from "../common/api";
@@ -18,6 +19,9 @@ const PUSH_THROTTLE_MS = 250;
 let window: BrowserWindow | null = null;
 let tray: Tray | null = null;
 let quitting = false;
+
+// Security: an installed copy never starts with a debugger / remote-control switch
+if (app.isPackaged && hasDebugSwitch(process.argv)) app.exit(1);
 
 if (!app.requestSingleInstanceLock()) {
   app.quit(); // a second copy would fight over the server port
