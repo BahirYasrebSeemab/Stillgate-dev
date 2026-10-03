@@ -1,5 +1,6 @@
 import { nativeImage, net } from "electron";
 import type { Logger } from "@asd/shared/node";
+import { findIconUrls } from "./icon-links";
 
 // Fetches the icon of an allowed website for its launcher tile.
 // Safety rules:
@@ -7,11 +8,13 @@ import type { Logger } from "@asd/shared/node";
 //   - 5 s timeout, at most 256 KB, no cookies of ours (the kiosk session has none)
 //   - the bytes are decoded and RE-ENCODED by Electron (nativeImage -> PNG data URL),
 //     so the page only ever gets a clean image, and its CSP still allows no network access
-// Tries the big "apple-touch-icon.png" first (sharp on large tiles), then "favicon.ico".
+// How it finds the icon (tested on real sites: many have nothing at /favicon.ico):
+//   1. load the homepage (max 512 KB) and read its <link rel="apple-touch-icon" / "icon"> tags
+//   2. fall back to /favicon.ico on the final (after redirects) and the original address
 
-const CANDIDATE_PATHS = ["/apple-touch-icon.png", "/favicon.ico"];
 const TIMEOUT_MS = 5000;
 const MAX_ICON_BYTES = 256 * 1024;
+const MAX_PAGE_BYTES = 512 * 1024;
 const ICON_SIZE = 64;
 const RETRY_FAILED_AFTER_MS = 5 * 60_000; // e.g. the PC was offline at first
 
@@ -25,7 +28,7 @@ export class SiteIcons {
     if (origin === null) return Promise.resolve(null);
     let pending = this.cache.get(origin);
     if (pending === undefined) {
-      pending = this.load(origin);
+      pending = this.load(url, origin);
       this.cache.set(origin, pending);
       void pending.then((icon) => {
         if (icon === null) setTimeout(() => this.cache.delete(origin), RETRY_FAILED_AFTER_MS);
@@ -34,12 +37,30 @@ export class SiteIcons {
     return pending;
   }
 
-  private async load(origin: string): Promise<string | null> {
-    for (const path of CANDIDATE_PATHS) {
-      const icon = await fetchIcon(`${origin}${path}`);
+  private async load(url: string, origin: string): Promise<string | null> {
+    const page = await fetchPage(url);
+    const candidates = [
+      ...(page === null ? [] : findIconUrls(page.html, page.finalUrl)),
+      ...(page === null ? [] : [`${new URL(page.finalUrl).origin}/favicon.ico`]),
+      `${origin}/favicon.ico`,
+    ];
+    for (const candidate of new Set(candidates)) {
+      const icon = await fetchIcon(candidate);
       if (icon !== null) return icon;
     }
     this.log.info("site_icon_not_found", { origin });
+    return null;
+  }
+}
+
+async function fetchPage(url: string): Promise<{ html: string; finalUrl: string } | null> {
+  try {
+    const response = await net.fetch(url, { signal: AbortSignal.timeout(TIMEOUT_MS), redirect: "follow" });
+    if (!response.ok || !(response.headers.get("content-type") ?? "").includes("html")) return null;
+    if (Number(response.headers.get("content-length") ?? 0) > MAX_PAGE_BYTES) return null;
+    const bytes = Buffer.from(await response.arrayBuffer());
+    return { html: bytes.subarray(0, MAX_PAGE_BYTES).toString("utf8"), finalUrl: response.url || url };
+  } catch {
     return null;
   }
 }

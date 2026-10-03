@@ -3,6 +3,6 @@
        Replace this file with the real logo: keep the name logo.svg, or tell Claude the new file name. -->
   <rect x="0" y="0" width="320" height="120" fill="#ffffff"/>
   <rect x="0" y="0" width="12" height="120" fill="#7b1e3a"/>
-  <text x="32" y="56" font-family="Segoe UI, sans-serif" font-size="34" font-weight="700" fill="#1b2a4e" letter-spacing="1">AMERICAN SPACE</text>
-  <text x="32" y="92" font-family="Segoe UI, sans-serif" font-size="24" font-weight="400" fill="#7b1e3a" letter-spacing="6">DUSHANBE</text>
+  <text x="32" y="56" font-family="Segoe UI, sans-serif" font-size="32" font-weight="700" fill="#1b2a4e" textLength="272" lengthAdjust="spacingAndGlyphs">AMERICAN SPACE</text>
+  <text x="32" y="92" font-family="Segoe UI, sans-serif" font-size="24" font-weight="400" fill="#7b1e3a" textLength="200" lengthAdjust="spacing">DUSHANBE</text>
 </svg>

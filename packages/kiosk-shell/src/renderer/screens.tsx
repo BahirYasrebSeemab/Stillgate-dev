@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent, type WheelEvent } from "react";
 import { EXPIRY_WARNING_SEC, type ShellState } from "@asd/shared";
 import type { RestoreFailure } from "../common/api";
 import logoUrl from "../../assets/logo.svg";
@@ -37,18 +37,45 @@ export function MaintenanceScreen() {
 
 type LauncherProps = { readonly state: ShellState; readonly remainingSec: number };
 
+// Tile sizes of the Windows 8 Start screen
+const TILE = 150; // medium square tile
+const GAP = 8;
+const HEADER_AND_MARGINS = 230;
+
+// How many tile rows fit on this screen (Windows 8 did the same: 3 rows at 768 px, more on taller screens)
+function useTileRows(): number {
+  const rowsFor = (height: number) => Math.max(2, Math.min(6, Math.floor((height - HEADER_AND_MARGINS) / (TILE + GAP))));
+  const [rows, setRows] = useState(() => rowsFor(window.innerHeight));
+  useEffect(() => {
+    const update = () => setRows(rowsFor(window.innerHeight));
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+  return rows;
+}
+
+// Windows 8 Start screen: groups side by side, tiles filling columns top to bottom,
+// the whole screen scrolls LEFT/RIGHT, and the mouse wheel scrolls sideways too.
 export function Launcher({ state, remainingSec }: LauncherProps) {
   const [error, setError] = useState<string | null>(null);
+  const rows = useTileRows();
   const run = async (open: () => Promise<{ ok: boolean }>) => {
     const result = await open();
     setError(result.ok ? null : t.launcher.failed);
   };
   const warn = remainingSec <= EXPIRY_WARNING_SEC;
+  const scrollSideways = (event: WheelEvent<HTMLDivElement>) => {
+    if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) event.currentTarget.scrollLeft += event.deltaY;
+  };
+  const gridStyle = { gridTemplateRows: `repeat(${rows}, ${TILE}px)` };
+  let order = 0; // position in the fly-in animation
 
   return (
     <div className="screen launcher">
       <header>
-        <img className="logo small" src={logoUrl} alt="American Space Dushanbe" />
+        <div className="start-title">
+          <img className="logo small" src={logoUrl} alt="American Space Dushanbe" />
+        </div>
         <div className={`clock ${warn ? "warn" : ""}`}>
           <span>{t.launcher.timeLeft}</span>
           <strong>{formatClock(remainingSec)}</strong>
@@ -56,28 +83,33 @@ export function Launcher({ state, remainingSec }: LauncherProps) {
       </header>
       {warn && <div className="banner">{t.launcher.warning}</div>}
       {error !== null && <div className="banner error">{error}</div>}
-      {state.apps.length === 0 && state.sites.length === 0 && <p className="big">{t.launcher.empty}</p>}
-      {state.apps.length > 0 && (
-        <section>
-          <h2>{t.launcher.apps}</h2>
-          <div className="tiles">
-            {state.apps.map((app, index) => (
-              <Tile key={app.id} name={app.name} color={tileColor(index)} loadIcon={() => api.appIcon(app.id)}
-                onOpen={() => void run(() => api.launchApp(app.id))} />
-            ))}
-          </div>
-        </section>
-      )}
-      {state.sites.length > 0 && (
-        <section>
-          <h2>{t.launcher.sites}</h2>
-          <div className="tiles">
-            {state.sites.map((site, index) => (
-              <Tile key={site.id} name={site.name} color={tileColor(index + state.apps.length)}
-                loadIcon={() => api.siteIcon(site.id)} fallback="🌐" onOpen={() => void run(() => api.openSite(site.id))} />
-            ))}
-          </div>
-        </section>
+      {state.apps.length === 0 && state.sites.length === 0 ? (
+        <p className="big start-empty">{t.launcher.empty}</p>
+      ) : (
+        <div className="start" onWheel={scrollSideways}>
+          {state.apps.length > 0 && (
+            <section className="group">
+              <h2>{t.launcher.apps}</h2>
+              <div className="group-tiles" style={gridStyle}>
+                {state.apps.map((app, index) => (
+                  <Tile key={app.id} name={app.name} color={tileColor(index)} size="medium" order={order++}
+                    loadIcon={() => api.appIcon(app.id)} onOpen={() => void run(() => api.launchApp(app.id))} />
+                ))}
+              </div>
+            </section>
+          )}
+          {state.sites.length > 0 && (
+            <section className="group">
+              <h2>{t.launcher.sites}</h2>
+              <div className="group-tiles" style={gridStyle}>
+                {state.sites.map((site, index) => (
+                  <Tile key={site.id} name={site.name} color={tileColor(index + state.apps.length)} size="wide" order={order++}
+                    loadIcon={() => api.siteIcon(site.id)} fallback="🌐" onOpen={() => void run(() => api.openSite(site.id))} />
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
       )}
     </div>
   );
@@ -86,12 +118,14 @@ export function Launcher({ state, remainingSec }: LauncherProps) {
 type TileProps = {
   readonly name: string;
   readonly color: string | undefined;
+  readonly size: "medium" | "wide";
+  readonly order: number;
   readonly loadIcon: () => Promise<string | null>;
   readonly onOpen: () => void;
   readonly fallback?: string;
 };
 
-function Tile({ name, color, loadIcon, onOpen, fallback }: TileProps) {
+function Tile({ name, color, size, order, loadIcon, onOpen, fallback }: TileProps) {
   const [icon, setIcon] = useState<string | null>(null);
   useEffect(() => {
     let active = true;
@@ -103,7 +137,7 @@ function Tile({ name, color, loadIcon, onOpen, fallback }: TileProps) {
   }, [name]);
 
   return (
-    <button className="tile" style={{ backgroundColor: color }} onClick={onOpen}>
+    <button className={`tile ${size}`} style={{ backgroundColor: color, animationDelay: `${order * 45}ms` }} onClick={onOpen}>
       <span className="tile-icon">
         {icon !== null ? <img src={icon} alt="" /> : <span className="tile-fallback">{fallback ?? name.slice(0, 1)}</span>}
       </span>
