@@ -15,7 +15,7 @@ const Password = z.string().min(1).max(MAX_PASSWORD_CHARS);
 
 export function registerIpc(agent: AgentClient, view: () => KioskView, log: Logger): void {
   const icons = new Map<string, string | null>();
-  const siteIcons = new SiteIcons(log);
+  const siteIcons = new SiteIcons(log, app.getPath("userData"));
 
   handle("kiosk:view", () => view());
 
