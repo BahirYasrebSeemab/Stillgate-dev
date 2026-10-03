@@ -15,6 +15,12 @@ const PUSH: PushChannel = "kiosk:update";
 
 let window: BrowserWindow | null = null;
 
+// Development captures only: keep painting even when other windows cover this one
+// (otherwise Windows' occlusion tracking makes captures show an old frame)
+if (process.env["ASD_DEV_CAPTURE_DIR"] !== undefined && !app.isPackaged) {
+  app.commandLine.appendSwitch("disable-features", "CalculateNativeWinOcclusion");
+}
+
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
