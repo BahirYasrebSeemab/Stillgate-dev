@@ -1,4 +1,4 @@
-# Learn ASD Lab Lock: start here
+# Learn Stillgate: start here
 
 This folder explains **every part of the project in simple words**, written for Bahir to study after the build. Read the files in order; each one starts with a one-sentence summary and an analogy.
 

@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { checkNewPassword } from "@asd/shared";
+import { checkNewPassword } from "@stillgate/shared";
 import type { EventView, PairingOffer, Snapshot } from "../../common/api";
 import { api, formatTime } from "../api";
 import { t } from "../strings";

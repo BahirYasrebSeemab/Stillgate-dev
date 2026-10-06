@@ -1,5 +1,5 @@
-import { PersistedState, type LockState } from "@asd/shared";
-import { readJson, writeJsonAtomic, type Logger } from "@asd/shared/node";
+import { PersistedState, type LockState } from "@stillgate/shared";
+import { readJson, writeJsonAtomic, type Logger } from "@stillgate/shared/node";
 import type { Clock } from "../deps";
 
 export async function loadState(file: string, log: Logger): Promise<PersistedState | null> {

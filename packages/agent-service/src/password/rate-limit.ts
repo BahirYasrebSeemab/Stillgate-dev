@@ -1,4 +1,4 @@
-import { PASSWORD_FREE_ATTEMPTS, PASSWORD_LOCKOUT_BASE_SEC, PASSWORD_LOCKOUT_MAX_SEC } from "@asd/shared";
+import { PASSWORD_FREE_ATTEMPTS, PASSWORD_LOCKOUT_BASE_SEC, PASSWORD_LOCKOUT_MAX_SEC } from "@stillgate/shared";
 
 // Restore-password rate limit (pure; the caller passes the time in).
 // 5 wrong tries -> locked for 60 s; each further lockout doubles: 120 s, 240 s ... max 15 min.

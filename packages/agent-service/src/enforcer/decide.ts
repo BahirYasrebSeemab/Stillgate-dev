@@ -6,7 +6,7 @@ import {
   normalizeWinPath,
   type LockStateName,
   type Policy,
-} from "@asd/shared";
+} from "@stillgate/shared";
 import type { ProcessInfo } from "./processes";
 
 // PURE decision: which of the kiosk user's processes must be closed right now.

@@ -1,5 +1,5 @@
 // Browser-safe exports only: no node:* imports anywhere below,
-// so the Electron renderers can use these too. Node-only helpers live in "@asd/shared/node".
+// so the Electron renderers can use these too. Node-only helpers live in "@stillgate/shared/node".
 export * from "./allowlist";
 export * from "./browser-policy";
 export * from "./constants";

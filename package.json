@@ -5,7 +5,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "tsc -b && bun run --filter @asd/manager build:ui && bun run --filter @asd/kiosk-shell build:ui",
+    "build": "tsc -b && bun run --filter @stillgate/manager build:ui && bun run --filter @stillgate/kiosk-shell build:ui",
     "typecheck": "tsc -b && tsc -p packages/shared/tsconfig.test.json && tsc -p packages/agent-service/tsconfig.test.json && tsc -p packages/manager/tsconfig.test.json && tsc -p packages/manager/tsconfig.renderer.json && tsc -p packages/kiosk-shell/tsconfig.renderer.json && tsc -p packages/kiosk-shell/tsconfig.test.json",
     "test": "bun test && bun run test:node",
     "test:node": "tsc -b && tsc -p packages/agent-service/tsconfig.nodetest.json && tsc -p packages/manager/tsconfig.nodetest.json && node --test \"packages/*/dist-test/**/*.nodetest.js\""

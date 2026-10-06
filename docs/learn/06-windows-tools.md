@@ -2,7 +2,7 @@
 
 > **In one sentence:** small PowerShell scripts and one XML file that install, protect and rescue the system on real Windows PCs. They're the only parts written in PowerShell, and **all of them are UNTESTED(windows)**.
 
-## `service-wrapper/asd-agent.xml` (WinSW)
+## `service-wrapper/stillgate-agent.xml` (WinSW)
 **Analogy:** WinSW is a translator between Windows' service manager and our Node program.
 - `<executable>` = node.exe; `<arguments>` = `"%BASE%\main.js"` (`%BASE%` = the wrapper's folder).
 - `<startmode>Automatic</startmode>`: start at boot, as **LocalSystem** (WinSW's default).
@@ -11,14 +11,14 @@
 
 ## `scripts/install-agent.ps1` (visitor PC, as Administrator)
 1. Checks it runs as admin, that every file exists, and that the kiosk user is **not** an administrator.
-2. Copies `main.js`/`cli.js`, the kiosk shell and WinSW into `C:\Program Files\AsdLabLock`; writes the XML with the real node.exe path.
-3. Creates `C:\ProgramData\AsdLabLock` and sets permissions with **icacls**:
+2. Copies `main.js`/`cli.js`, the kiosk shell and WinSW into `C:\Program Files\Stillgate`; writes the XML with the real node.exe path.
+3. Creates `C:\ProgramData\Stillgate` and sets permissions with **icacls**:
    - `/inheritance:r` removes inherited rights;
    - `/grant:r "*S-1-5-18:(OI)(CI)F" "*S-1-5-32-544:(OI)(CI)F"` gives full control to **SYSTEM** and **Administrators** only;
    - `*S-1-…` is a **SID**, which works on Russian/Tajik Windows where group names are translated;
    - `(OI)(CI)` means "also files and subfolders";
    - the `shell\` subfolder also gets `RX` (read) for the kiosk user's SID, so the shell can read the token.
-4. `asd-agent.exe install` + `start`, then `cli.js init` with the kiosk user's name, SID and shell path.
+4. `stillgate-agent.exe install` + `start`, then `cli.js init` with the kiosk user's name, SID and shell path.
 5. **It doesn't touch the shell or lockdown:** dry-run and audit stay on.
 
 ## `scripts/emergency-restore.ps1`

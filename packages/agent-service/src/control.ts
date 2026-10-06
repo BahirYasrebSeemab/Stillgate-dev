@@ -1,7 +1,7 @@
 import { mkdir, readdir, rm } from "node:fs/promises";
 import { join } from "node:path";
-import { EnforcementMode } from "@asd/shared";
-import { randomHex, readJson, writeJsonAtomic, type Logger } from "@asd/shared/node";
+import { EnforcementMode } from "@stillgate/shared";
+import { randomHex, readJson, writeJsonAtomic, type Logger } from "@stillgate/shared/node";
 import { z } from "zod";
 
 // How the admin CLI talks to the running service: it drops a small JSON "request" file

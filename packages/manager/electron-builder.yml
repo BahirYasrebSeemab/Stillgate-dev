@@ -1,9 +1,9 @@
 # Builds the Windows installer for the manager PC: bun run dist (run ON WINDOWS).
 # UNTESTED(windows): packaging with Bun's isolated node_modules layout. If electron-builder
 # cannot find dependencies, add to the repo's bunfig.toml:  [install] linker = "hoisted"
-appId: local.asd.lablock.manager
-productName: ASD Lab Manager
-artifactName: ASD-Lab-Manager-Setup-${version}.${ext}
+appId: local.stillgate.manager
+productName: Stillgate Manager
+artifactName: Stillgate-Manager-Setup-${version}.${ext}
 directories:
   output: release
 files:

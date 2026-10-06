@@ -1,5 +1,5 @@
 import { clipboard, ipcMain, type IpcMainInvokeEvent } from "electron";
-import { DurationSec, MAX_NAME_CHARS, MAX_PASSWORD_CHARS, MachineId, describeZodError, err, ok } from "@asd/shared";
+import { DurationSec, MAX_NAME_CHARS, MAX_PASSWORD_CHARS, MachineId, describeZodError, err, ok } from "@stillgate/shared";
 import { z } from "zod";
 import type { InvokeChannel } from "../common/api";
 import type { ManagerService } from "./service";
@@ -20,9 +20,9 @@ const Ids = z.array(MachineId).min(1).max(50);
 const Text = (max: number) => z.string().max(max);
 
 export function registerIpc(service: ManagerService): void {
-  handle("asd:snapshot", () => service.snapshot());
+  handle("stillgate:snapshot", () => service.snapshot());
 
-  handle("asd:command", (idsInput: unknown, commandInput: unknown) => {
+  handle("stillgate:command", (idsInput: unknown, commandInput: unknown) => {
     const ids = Ids.safeParse(idsInput);
     const command = MachineCommand.safeParse(commandInput);
     if (!ids.success) return err(describeZodError(ids.error));
@@ -30,32 +30,32 @@ export function registerIpc(service: ManagerService): void {
     return ok(service.sendCommand(ids.data, command.data));
   });
 
-  handle("asd:rename", (id: unknown, name: unknown) => {
+  handle("stillgate:rename", (id: unknown, name: unknown) => {
     const parsedId = MachineId.safeParse(id);
     const parsedName = Text(MAX_NAME_CHARS).safeParse(name);
     if (!parsedId.success || !parsedName.success) return err("invalid input");
     return service.renameMachine(parsedId.data, parsedName.data);
   });
 
-  handle("asd:revoke", (id: unknown) => {
+  handle("stillgate:revoke", (id: unknown) => {
     const parsedId = MachineId.safeParse(id);
     return parsedId.success ? service.revokeMachine(parsedId.data) : err("invalid input");
   });
 
-  handle("asd:savePolicy", (policy: unknown) => service.savePolicy(policy));
+  handle("stillgate:savePolicy", (policy: unknown) => service.savePolicy(policy));
 
-  handle("asd:setPassword", (password: unknown, confirmation: unknown) => {
+  handle("stillgate:setPassword", (password: unknown, confirmation: unknown) => {
     const a = Text(MAX_PASSWORD_CHARS).safeParse(password);
     const b = Text(MAX_PASSWORD_CHARS).safeParse(confirmation);
     return a.success && b.success ? service.setPassword(a.data, b.data) : err("invalid input");
   });
 
-  handle("asd:createPairing", (address: unknown) => {
+  handle("stillgate:createPairing", (address: unknown) => {
     const parsed = Text(15).safeParse(address);
     return parsed.success ? service.createPairing(parsed.data) : err("invalid input");
   });
 
-  handle("asd:copy", (text: unknown) => {
+  handle("stillgate:copy", (text: unknown) => {
     const parsed = Text(1000).safeParse(text);
     if (parsed.success) clipboard.writeText(parsed.data);
   });

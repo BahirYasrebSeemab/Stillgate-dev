@@ -1,5 +1,5 @@
-import type { LockStateName, Policy } from "@asd/shared";
-import type { Logger } from "@asd/shared/node";
+import type { LockStateName, Policy } from "@stillgate/shared";
+import type { Logger } from "@stillgate/shared/node";
 import type { AgentConfig } from "../config";
 import type { Exec } from "../windows/exec";
 import { decideKills } from "./decide";

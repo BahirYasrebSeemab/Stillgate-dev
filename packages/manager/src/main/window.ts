@@ -4,7 +4,7 @@ import { BrowserWindow, app, session, shell } from "electron";
 // The manager window, locked down like a kiosk page even though only staff use it:
 // no Node in the page, sandboxed renderer, no navigation away, no new windows.
 
-export const DEV_SERVER_URL = process.env["ASD_DEV_SERVER_URL"]; // set by `bun run dev`
+export const DEV_SERVER_URL = process.env["STILLGATE_DEV_SERVER_URL"]; // set by `bun run dev`
 
 export function createManagerWindow(): BrowserWindow {
   const window = new BrowserWindow({
@@ -12,7 +12,7 @@ export function createManagerWindow(): BrowserWindow {
     height: 800,
     minWidth: 900,
     minHeight: 600,
-    title: "ASD Lab Lock — Manager",
+    title: "Stillgate Manager",
     show: false,
     autoHideMenuBar: true,
     webPreferences: {

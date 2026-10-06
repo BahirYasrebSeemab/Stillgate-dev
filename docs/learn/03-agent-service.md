@@ -9,7 +9,7 @@
 ---
 
 ## How it starts (`main.ts` → `agent.ts`)
-1. Work out the data folder (`paths.ts`): `%ProgramData%\AsdLabLock`, or `$ASD_DATA_DIR` in development.
+1. Work out the data folder (`paths.ts`): `%ProgramData%\Stillgate`, or `$STILLGATE_DATA_DIR` in development.
 2. Load `config.json` (`config.ts`). The safe defaults are `dryRun: true` and `enforcement: "audit"`.
 3. Load `state.json`, and run the **boot rule** from `shared`: start LOCKED, unless it's the same boot or a MAINTENANCE.
 4. Build every part and wire them together (`agent.ts` is the wiring diagram).
@@ -94,7 +94,7 @@
 bun run build
 cd packages/agent-service
 bun run dev            # starts the agent with logs in the terminal (Ctrl+C to stop)
-bun run cli status     # in another terminal (same ASD_DATA_DIR) to see its state
+bun run cli status     # in another terminal (same STILLGATE_DATA_DIR) to see its state
 ```
-- `bun run dev` sets `ASD_DATA_DIR=../../.dev-data/agent` (gitignored) and `ASD_LOG_ECHO=1`.
-- For `cli` in development, set `ASD_DATA_DIR` the same way, for example: `ASD_DATA_DIR=../../.dev-data/agent node dist/cli.js status`.
+- `bun run dev` sets `STILLGATE_DATA_DIR=../../.dev-data/agent` (gitignored) and `STILLGATE_LOG_ECHO=1`.
+- For `cli` in development, set `STILLGATE_DATA_DIR` the same way, for example: `STILLGATE_DATA_DIR=../../.dev-data/agent node dist/cli.js status`.

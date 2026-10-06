@@ -1,8 +1,8 @@
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { hasDebugSwitch } from "@asd/shared";
+import { hasDebugSwitch } from "@stillgate/shared";
 import { Menu, Tray, app, nativeImage, type BrowserWindow } from "electron";
-import { createLogger } from "@asd/shared/node";
+import { createLogger } from "@stillgate/shared/node";
 import type { PushChannel } from "../common/api";
 import { registerIpc } from "./ipc";
 import { safeStorageBox } from "./secret-box";
@@ -13,7 +13,7 @@ import { createManagerWindow } from "./window";
 // Manager app entry. The main process runs the agent server; the window is only the UI.
 // Closing the window hides it to the tray: the server keeps running until "Quit".
 
-const PUSH: PushChannel = "asd:update";
+const PUSH: PushChannel = "stillgate:update";
 const PUSH_THROTTLE_MS = 250;
 
 let window: BrowserWindow | null = null;
@@ -49,8 +49,8 @@ async function start(): Promise<void> {
     }, PUSH_THROTTLE_MS);
   });
 
-  // Development only: ASD_SERVER_HOST=127.0.0.1 keeps the server off the network (no firewall pop-up)
-  const devHost = app.isPackaged ? undefined : process.env["ASD_SERVER_HOST"];
+  // Development only: STILLGATE_SERVER_HOST=127.0.0.1 keeps the server off the network (no firewall pop-up)
+  const devHost = app.isPackaged ? undefined : process.env["STILLGATE_SERVER_HOST"];
   await service.start(devHost);
   if (app.isPackaged) app.setLoginItemSettings({ openAtLogin: true }); // start with Windows
   createTray();
@@ -81,7 +81,7 @@ function showWindow(): void {
 function createTray(): void {
   const icon = nativeImage.createFromPath(join(__dirname, "..", "..", "assets", "tray.png"));
   tray = new Tray(icon);
-  tray.setToolTip("ASD Lab Lock — Manager (server running)");
+  tray.setToolTip("Stillgate Manager (server running)");
   tray.setContextMenu(
     Menu.buildFromTemplate([
       { label: "Open manager", click: () => showWindow() },
@@ -92,10 +92,10 @@ function createTray(): void {
   tray.on("double-click", () => showWindow());
 }
 
-// Development only: ASD_DEV_CAPTURE_DIR=<folder> saves a picture + the text of THIS window
+// Development only: STILLGATE_DEV_CAPTURE_DIR=<folder> saves a picture + the text of THIS window
 // a few seconds after it loads (to check the UI without looking at the screen).
 function captureForDevelopment(target: BrowserWindow): void {
-  const dir = process.env["ASD_DEV_CAPTURE_DIR"];
+  const dir = process.env["STILLGATE_DEV_CAPTURE_DIR"];
   if (dir === undefined || app.isPackaged) return;
   target.webContents.once("did-finish-load", () => {
     setTimeout(() => {

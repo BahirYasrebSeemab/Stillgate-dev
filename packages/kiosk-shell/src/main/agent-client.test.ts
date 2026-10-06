@@ -4,9 +4,9 @@ import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { ShellIpcServer } from "@asd/agent-service/shell-ipc";
-import { err, ok, type ShellState } from "@asd/shared";
-import { randomHex, silentLogger, writeJsonAtomic } from "@asd/shared/node";
+import { ShellIpcServer } from "@stillgate/agent-service/shell-ipc";
+import { err, ok, type ShellState } from "@stillgate/shared";
+import { randomHex, silentLogger, writeJsonAtomic } from "@stillgate/shared/node";
 import { AgentClient } from "./agent-client";
 
 const TOKEN = randomHex(32);
@@ -35,7 +35,7 @@ const waitFor = async (check: () => boolean) => {
 };
 
 beforeAll(async () => {
-  dir = await mkdtemp(join(tmpdir(), "asd-kiosk-"));
+  dir = await mkdtemp(join(tmpdir(), "stillgate-kiosk-"));
   const port = await server.start();
   const tokenFile = join(dir, "shell-token");
   await writeJsonAtomic(tokenFile, { schemaVersion: 1, token: TOKEN, port });

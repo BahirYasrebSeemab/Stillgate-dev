@@ -1,12 +1,10 @@
-/* Kiosk look: navy background, flat square tiles (Windows 8 Start screen style),
-   burgundy accents. No rounded corners anywhere. */
+/* Kiosk look: white locked page with the logo, navy launcher with flat square tiles
+   (Windows 8 Start screen style), burgundy accents. No rounded corners anywhere. */
 :root {
   --bg: #13213f;
   --text: #ffffff;
   --muted: #b8c4dc;
   --light: #6f9bd1;
-  --wave-burgundy: #c2416b; /* brighter than --burgundy so it shows on navy */
-  --wave-light: #6f9bd1;
   --burgundy: #7b1e3a;
   --navy: #1b2a4e;
   --warn: #b7791f;
@@ -21,17 +19,24 @@
 html, body, #root { margin: 0; height: 100%; overflow: hidden; background: var(--bg); }
 .screen { position: relative; height: 100%; display: flex; flex-direction: column; }
 
-/* ---------- Locked page ---------- */
-.locked { align-items: center; justify-content: center; text-align: center; }
+/* ---------- Locked page: white, navy text, the logo in the middle ---------- */
+.locked { align-items: center; justify-content: center; text-align: center; background: #fff; color: var(--navy); }
 .locked-content { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 32px 48px; }
-.logo { width: 320px; height: auto; margin-bottom: 12px; background: #fff; padding: 14px 18px; }
-.logo.small { width: 200px; margin: 0; padding: 8px 12px; }
+/* The logo PNG is square with a white margin, so it sits on the white page with no box around it */
+.logo { width: 320px; height: 320px; object-fit: contain; }
+.logo.small { width: 104px; height: 104px; background: #fff; }
 h1 { font-size: 38px; font-weight: 300; margin: 0; color: #fff; }
+.locked h1 { color: var(--navy); }
 .big { font-size: 24px; color: var(--muted); max-width: 900px; margin: 0; }
+.locked .big { color: #4a5670; }
 .small-note { position: fixed; bottom: 16px; right: 20px; font-size: 13px; color: var(--muted); z-index: 1; }
+.locked .small-note { color: var(--red); }
+/* "Stillgate" signature in the bottom-left corner */
+.brand-mark { position: fixed; left: 22px; bottom: 14px; margin: 0; z-index: 1; font-size: 13px; font-weight: 600; letter-spacing: 0.32em; text-transform: uppercase; color: var(--muted); opacity: 0.8; }
+.locked .brand-mark { color: var(--navy); opacity: 0.55; }
 
 /* Moving wave lines behind the logo */
-.waves { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.waves { --wave-burgundy: #7b1e3a; --wave-navy: #1b2a4e; position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .wave { position: absolute; left: 0; top: 18%; width: 200vw; height: 64vh; animation: drift linear infinite; will-change: transform; }
 @keyframes drift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .wave { animation: none; } }

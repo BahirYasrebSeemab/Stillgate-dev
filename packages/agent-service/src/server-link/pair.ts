@@ -7,8 +7,8 @@ import {
   type PairingInfo,
   type Result,
   type ServerToAgent,
-} from "@asd/shared";
-import type { Logger } from "@asd/shared/node";
+} from "@stillgate/shared";
+import type { Logger } from "@stillgate/shared/node";
 import { openPinnedSocket, textOf } from "./pinned-socket";
 
 // One-time pairing: connect to the server named in the pairing string, check its

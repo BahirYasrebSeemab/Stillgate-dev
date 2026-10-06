@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import type { AgentPaths } from "./paths";
-import { silentLogger } from "@asd/shared/node";
+import { silentLogger } from "@stillgate/shared/node";
 import { runCli } from "./cli";
 import { ConfigStore } from "./config";
 import { pendingControlRequests, processControlRequests, type ControlRequest } from "./control";

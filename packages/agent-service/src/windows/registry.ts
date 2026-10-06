@@ -54,7 +54,7 @@ function toRegResult(result: ExecResult): RegResult {
 }
 
 // `reg query KEY /v Shell` prints lines like:
-//     Shell    REG_SZ    C:\Program Files\AsdLabLock\kiosk-shell.exe
+//     Shell    REG_SZ    C:\Program Files\Stillgate\kiosk-shell.exe
 // The data may contain spaces, so only the name and type are split off.
 export function parseRegValue(output: string, name: string): string | null {
   const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

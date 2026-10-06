@@ -1,5 +1,6 @@
 // Every piece of text the visitors see, in one place (Russian/Tajik translations go here later).
 export const t = {
+  brand: "Stillgate",
   locked: {
     title: "Welcome to American Space Dushanbe",
     askDesk: "Please ask the registration desk to unlock this computer.",

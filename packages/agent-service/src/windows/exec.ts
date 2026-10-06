@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { win32 } from "node:path";
-import type { Logger } from "@asd/shared/node";
+import type { Logger } from "@stillgate/shared/node";
 
 // The ONLY Windows programs the agent may run, always by absolute path under System32
 // (never via PATH, so a planted "reg.exe" elsewhere can't be picked up).

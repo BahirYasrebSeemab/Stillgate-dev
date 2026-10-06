@@ -1,9 +1,9 @@
 import { join } from "node:path";
-import { agentDataDir, shellTokenFile } from "@asd/shared/node";
+import { agentDataDir, shellTokenFile } from "@stillgate/shared/node";
 
-// Everything the agent stores lives in one folder (see agentDataDir in @asd/shared/node):
-//   Windows:  %ProgramData%\AsdLabLock      (ACL: SYSTEM + Administrators; set by the install script)
-//   dev:      $ASD_DATA_DIR, or ./.dev-data/agent (gitignored)
+// Everything the agent stores lives in one folder (see agentDataDir in @stillgate/shared/node):
+//   Windows:  %ProgramData%\Stillgate      (ACL: SYSTEM + Administrators; set by the install script)
+//   dev:      $STILLGATE_DATA_DIR, or ./.dev-data/agent (gitignored)
 
 export type AgentPaths = {
   readonly dataDir: string;

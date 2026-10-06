@@ -1,6 +1,6 @@
 import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
-import { LineSplitter, validate } from "@asd/shared";
-import type { Logger } from "@asd/shared/node";
+import { LineSplitter, validate } from "@stillgate/shared";
+import type { Logger } from "@stillgate/shared/node";
 import { z } from "zod";
 import { windowsToolPath } from "../windows/exec";
 

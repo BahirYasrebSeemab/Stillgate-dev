@@ -1,9 +1,9 @@
 import { EventEmitter } from "node:events";
-import { reduce, remainingSec, type Effect, type LockEvent, type LockState, type Now } from "@asd/shared";
-import type { Logger } from "@asd/shared/node";
+import { reduce, remainingSec, type Effect, type LockEvent, type LockState, type Now } from "@stillgate/shared";
+import type { Logger } from "@stillgate/shared/node";
 import type { Clock } from "../deps";
 
-// Owns the current lock state. Every event goes through the pure reducer from @asd/shared,
+// Owns the current lock state. Every event goes through the pure reducer from @stillgate/shared,
 // then the resulting effects are carried out by `runEffects`.
 // Events are processed strictly one at a time (a promise queue), because effects are async
 // and two overlapping transitions could otherwise interleave.

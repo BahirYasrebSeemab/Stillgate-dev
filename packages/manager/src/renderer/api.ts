@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import type { ManagerApi, Snapshot } from "../common/api";
 
-// The preload script put the API on window.asd; this tells TypeScript it exists.
+// The preload script put the API on window.stillgate; this tells TypeScript it exists.
 declare global {
   interface Window {
-    readonly asd: ManagerApi;
+    readonly stillgate: ManagerApi;
   }
 }
 
-export const api: ManagerApi = window.asd;
+export const api: ManagerApi = window.stillgate;
 
 // Live snapshot of the manager state: loaded once, then updated by pushes from the main process
 export function useSnapshot(): Snapshot | null {

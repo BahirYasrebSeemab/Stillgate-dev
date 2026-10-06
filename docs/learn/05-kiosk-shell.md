@@ -22,7 +22,7 @@ If the agent can't be reached, the screen stays on the **locked page** with a sm
 | File | Job |
 |---|---|
 | `index.ts` | Starts the window and the `AgentClient`. While LOCKED it keeps the window **always on top**; while UNLOCKED it lets launched programs come to the front. It never quits. |
-| `agent-client.ts` | Reads the **token file** (`ProgramData\AsdLabLock\shell\shell-token`; only the kiosk user can read it), connects to `127.0.0.1:<port>`, sends `subscribe`, receives state pushes, and **reconnects every 2 s forever**. Each request carries a `reqId`, so replies find their caller. TypeScript trick: a *distributive* `Omit` keeps each command's own fields. |
+| `agent-client.ts` | Reads the **token file** (`ProgramData\Stillgate\shell\shell-token`; only the kiosk user can read it), connects to `127.0.0.1:<port>`, sends `subscribe`, receives state pushes, and **reconnects every 2 s forever**. Each request carries a `reqId`, so replies find their caller. TypeScript trick: a *distributive* `Omit` keeps each command's own fields. |
 | `ipc.ts` | UI → main doors. Each one checks the input with zod, **asks the agent first**, and only then starts something. Icons come from `app.getFileIcon`, and only for apps the agent currently lists. |
 | `launch.ts` | `spawn(path, [args])`, detached. Sites open in Edge: `msedge.exe <url>`. |
 | `window.ts` | The kiosk window: full screen, frameless, `kiosk: true`, not closable, no navigation, no new windows. It blocks reload, DevTools, zoom and close shortcuts (F5, F12, Ctrl+R/W/±, Alt+F4), denies every permission request, and reloads itself if the page crashes. **Exception:** when Windows is restarting (`query-session-end` / `session-end`) it lets itself close, otherwise it would block the restart that maintenance needs. |
@@ -50,7 +50,7 @@ Exposes `window.kiosk` with exactly `KioskApi`: `getView`, `onView`, `launchApp(
   - Ignores auto-repeat, and forgets held keys when the window loses focus.
 - `api.ts`: `useKioskView` (state + pushes), `useNow` (1 s tick for the countdown), `useHotkey`. It blocks Space from "clicking" a focused tile, except in the password box, where you may type a space.
 - `strings.ts`: all visitor-facing text, ready for translation.
-- `assets/logo.svg` is a **placeholder**. Replace it with the real ASD logo.
+- `assets/logo.png` is the American Space Dushanbe logo shown on the (white) locked page. To brand a kiosk for another site, replace that file (keep the name). The small "Stillgate" mark in the corner comes from `strings.ts` (`t.brand`).
 
 **Known limit (in SECURITY.md):** the hotkey only works while the kiosk window has focus, not while a visitor is inside another program.
 
@@ -59,4 +59,4 @@ Exposes `window.kiosk` with exactly `KioskApi`: `getView`, `onView`, `launchApp(
 - `agent-client.test.ts`: an **integration test**. The kiosk's real `AgentClient` against the agent's real `ShellIpcServer` with a real token file: subscribe, pushes, launch spec from the agent, lockout passthrough, and "no agent → null state".
 
 ## Not yet run for real
-The Electron windows themselves haven't been opened yet: they're built and type-checked, but not launched. That's the first step on Windows (see `TESTING.md`). Don't run the kiosk shell on your everyday desktop: it's a full-screen, always-on-top window that refuses to close. Use the Windows test PC, or set `ASD_DEV_SERVER_URL` and expect to end it from Task Manager.
+The Electron windows themselves haven't been opened yet: they're built and type-checked, but not launched. That's the first step on Windows (see `TESTING.md`). Don't run the kiosk shell on your everyday desktop: it's a full-screen, always-on-top window that refuses to close. Use the Windows test PC, or set `STILLGATE_DEV_SERVER_URL` and expect to end it from Task Manager.

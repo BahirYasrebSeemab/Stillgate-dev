@@ -1,14 +1,14 @@
-import { createLogger } from "@asd/shared/node";
+import { createLogger } from "@stillgate/shared/node";
 import { createAgent } from "./agent";
 import { systemClock } from "./deps";
 import { resolveAgentPaths } from "./paths";
 
 // Service entry point. WinSW starts this with Node as SYSTEM and restarts it if it crashes.
-// Set ASD_LOG_ECHO=1 to also print the log to the console (handy in development).
+// Set STILLGATE_LOG_ECHO=1 to also print the log to the console (handy in development).
 
 async function main(): Promise<void> {
   const paths = resolveAgentPaths();
-  const log = createLogger({ file: paths.logFile, echo: process.env["ASD_LOG_ECHO"] === "1" });
+  const log = createLogger({ file: paths.logFile, echo: process.env["STILLGATE_LOG_ECHO"] === "1" });
 
   process.on("uncaughtException", (error) => {
     log.error("crash", { error });

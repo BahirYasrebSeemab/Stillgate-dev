@@ -1,5 +1,5 @@
 import { X509Certificate } from "node:crypto";
-import { certFingerprint, type Logger } from "@asd/shared/node";
+import { certFingerprint, type Logger } from "@stillgate/shared/node";
 import { generate } from "selfsigned";
 import type { SecretBox } from "../secret-box";
 import type { ManagerStore } from "../store";
@@ -22,7 +22,7 @@ export async function ensureCertificate(store: ManagerStore, box: SecretBox, log
   const notBeforeDate = new Date();
   const notAfterDate = new Date(notBeforeDate);
   notAfterDate.setFullYear(notAfterDate.getFullYear() + VALID_YEARS);
-  const pems = await generate([{ name: "commonName", value: "ASD Lab Lock manager" }], {
+  const pems = await generate([{ name: "commonName", value: "Stillgate manager" }], {
     keySize: 2048,
     algorithm: "sha256",
     notBeforeDate,

@@ -7,8 +7,8 @@ import {
   parseServerMessage,
   type AgentToServer,
   type ServerToAgent,
-} from "@asd/shared";
-import { authMac, type Logger } from "@asd/shared/node";
+} from "@stillgate/shared";
+import { authMac, type Logger } from "@stillgate/shared/node";
 import type WebSocket from "ws";
 import type { Pairing } from "../config";
 import { reconnectDelayMs } from "./backoff";

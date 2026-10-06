@@ -1,5 +1,5 @@
 {
-  "name": "@asd/shared",
+  "name": "@stillgate/shared",
   "version": "0.1.0",
   "private": true,
   "exports": {

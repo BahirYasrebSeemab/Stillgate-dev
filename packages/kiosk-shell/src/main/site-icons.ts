@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { nativeImage, net } from "electron";
-import { writeJsonAtomic, type Logger } from "@asd/shared/node";
+import { writeJsonAtomic, type Logger } from "@stillgate/shared/node";
 import { bestImageInIco } from "./ico";
 import { findIconUrls, isAllowedIconUrl } from "./icon-links";
 

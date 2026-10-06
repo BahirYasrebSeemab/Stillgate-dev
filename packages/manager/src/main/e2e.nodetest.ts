@@ -1,4 +1,4 @@
-// END-TO-END: the real agent link (from @asd/agent-service) against the real manager server,
+// END-TO-END: the real agent link (from @stillgate/agent-service) against the real manager server,
 // over TLS on 127.0.0.1. Runs on Node's test runner: bun run test:node
 import assert from "node:assert/strict";
 import { mkdtemp, rm } from "node:fs/promises";
@@ -6,9 +6,9 @@ import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, before, describe, it } from "node:test";
-import { decodePairing, type MachineId } from "@asd/shared";
-import { silentLogger } from "@asd/shared/node";
-import { ServerLink, pairWithServer, type ServerCommand, type StateReport } from "@asd/agent-service/server-link";
+import { decodePairing, type MachineId } from "@stillgate/shared";
+import { silentLogger } from "@stillgate/shared/node";
+import { ServerLink, pairWithServer, type ServerCommand, type StateReport } from "@stillgate/agent-service/server-link";
 import type { SecretBox } from "./secret-box";
 import { ManagerService } from "./service";
 import { openManagerStore } from "./store";
@@ -36,7 +36,7 @@ describe("manager <-> agent, end to end", () => {
   let service: ManagerService;
 
   before(async () => {
-    dir = await mkdtemp(join(tmpdir(), "asd-e2e-"));
+    dir = await mkdtemp(join(tmpdir(), "stillgate-e2e-"));
     const store = await openManagerStore(dir, silentLogger);
     const port = await freePort();
     await store.settings.update((settings) => ({ ...settings, serverPort: port }));

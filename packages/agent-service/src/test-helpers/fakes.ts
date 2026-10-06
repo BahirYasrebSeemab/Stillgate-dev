@@ -41,12 +41,12 @@ export class FakeClock implements Clock {
 }
 
 export async function tempPaths(): Promise<{ paths: AgentPaths; cleanup: () => Promise<void> }> {
-  const dir = await mkdtemp(join(tmpdir(), "asd-agent-"));
+  const dir = await mkdtemp(join(tmpdir(), "stillgate-agent-"));
   return {
-    paths: resolveAgentPaths({ ASD_DATA_DIR: dir }),
+    paths: resolveAgentPaths({ STILLGATE_DATA_DIR: dir }),
     cleanup: () => rm(dir, { recursive: true, force: true }),
   };
 }
 
 export const MACHINE_ID = "3f2b8c1e-5d4a-4b6c-9e8f-0a1b2c3d4e5f";
-export const KIOSK = { user: "kiosk", sid: "S-1-5-21-1-2-3-1001", shellExe: "C:\\Program Files\\AsdLabLock\\kiosk-shell\\kiosk-shell.exe" };
+export const KIOSK = { user: "kiosk", sid: "S-1-5-21-1-2-3-1001", shellExe: "C:\\Program Files\\Stillgate\\kiosk-shell\\kiosk-shell.exe" };

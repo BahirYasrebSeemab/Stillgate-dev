@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { isPairingCode } from "@asd/shared";
+import { isPairingCode } from "@stillgate/shared";
 import { AuthLimiter, PairingCodes } from "./guards";
 
 describe("PairingCodes", () => {

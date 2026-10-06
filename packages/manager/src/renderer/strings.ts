@@ -1,6 +1,6 @@
 // Every piece of text the manager UI shows, in one place (easy to translate later).
 export const t = {
-  appTitle: "ASD Lab Lock — Manager",
+  appTitle: "Stillgate Manager",
   tabs: { machines: "Computers", allowList: "Allowed apps & sites", password: "Restore password", pairing: "Add a computer", events: "Event log" },
   server: {
     listening: (port: number) => `Server running on port ${port}`,

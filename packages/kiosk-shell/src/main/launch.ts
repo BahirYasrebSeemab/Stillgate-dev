@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
-import { EDGE_EXE } from "@asd/shared";
-import type { Logger } from "@asd/shared/node";
+import { EDGE_EXE } from "@stillgate/shared";
+import type { Logger } from "@stillgate/shared/node";
 
 // Starts programs AS THE KIOSK USER (this shell runs as that user).
 // Paths and URLs always come from the agent's answer, never from the UI.

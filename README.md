@@ -1,6 +1,6 @@
-# ASD Lab Lock
+# Stillgate
 
-Lockdown software for the visitor computers at **American Space Dushanbe**.
+**Stillgate** is lockdown software for shared visitor computers, built first for **American Space Dushanbe**.
 A visitor PC boots straight into a locked screen. The registration desk unlocks it for a set time from a manager app; the visitor sees only the allowed programs and websites; when time is up, the programs close and the PC locks again.
 
 - 4 visitor PCs (Windows 11 Home) + 1 manager PC, on one local network. No internet service, no cloud.

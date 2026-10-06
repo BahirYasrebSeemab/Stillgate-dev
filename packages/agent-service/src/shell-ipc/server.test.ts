@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { connect, type Socket } from "node:net";
-import { LineSplitter, err, ok, parseAgentToShell, type AgentToShell, type ShellState } from "@asd/shared";
-import { randomHex, silentLogger } from "@asd/shared/node";
+import { LineSplitter, err, ok, parseAgentToShell, type AgentToShell, type ShellState } from "@stillgate/shared";
+import { randomHex, silentLogger } from "@stillgate/shared/node";
 import { ShellIpcServer } from "./server";
 
 const TOKEN = randomHex(32);

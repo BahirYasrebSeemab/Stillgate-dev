@@ -7,8 +7,8 @@ import {
   PasswordRecord,
   Policy,
   isIPv4,
-} from "@asd/shared";
-import { JsonFileStore, type Logger } from "@asd/shared/node";
+} from "@stillgate/shared";
+import { JsonFileStore, type Logger } from "@stillgate/shared/node";
 import { z } from "zod";
 
 export const KioskConfig = z.strictObject({
@@ -51,7 +51,7 @@ export function pairingOf(config: AgentConfig): Pairing | null {
   return server && machineId && secret ? { server, machineId, secret } : null;
 }
 
-// The config file store: in memory + atomic saves (see JsonFileStore in @asd/shared/node).
+// The config file store: in memory + atomic saves (see JsonFileStore in @stillgate/shared/node).
 // A corrupt config is moved aside and the agent starts unpaired, so nothing can unlock.
 export type ConfigStore = JsonFileStore<typeof AgentConfig>;
 

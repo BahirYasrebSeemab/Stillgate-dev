@@ -1,6 +1,6 @@
 import { hostname } from "node:os";
-import { EnforcementMode, PersistedState, decodePairing } from "@asd/shared";
-import { createLogger, readJson, type Logger } from "@asd/shared/node";
+import { EnforcementMode, PersistedState, decodePairing } from "@stillgate/shared";
+import { createLogger, readJson, type Logger } from "@stillgate/shared/node";
 import { ConfigStore, KioskConfig } from "./config";
 import { pendingControlRequests, writeControlRequest } from "./control";
 import { resolveAgentPaths, type AgentPaths } from "./paths";
@@ -8,7 +8,7 @@ import { pairWithServer } from "./server-link/pair";
 
 // Admin command line (run as Administrator on the visitor PC):
 //   node cli.js init --kiosk-user kiosk --kiosk-sid S-1-5-21-... --shell-exe "C:\...\kiosk-shell.exe"
-//   node cli.js pair "asd1:192.168.1.10:47800:<fingerprint>:<code>"
+//   node cli.js pair "sg1:192.168.1.10:47800:<fingerprint>:<code>"
 //   node cli.js status
 //   node cli.js set-enforcement audit|enforce
 //   node cli.js set-dry-run on|off

@@ -1,4 +1,4 @@
-import type { Logger } from "@asd/shared/node";
+import type { Logger } from "@stillgate/shared/node";
 import type { ConfigStore } from "./config";
 import type { ServerCommand } from "./server-link/client";
 import type { StateRunner } from "./state/runner";

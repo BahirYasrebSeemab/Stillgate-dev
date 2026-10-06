@@ -1,4 +1,4 @@
-import type { Logger } from "@asd/shared/node";
+import type { Logger } from "@stillgate/shared/node";
 import type { KioskConfig } from "../config";
 import { withKioskHive } from "./kiosk-hive";
 import type { Registry } from "./registry";

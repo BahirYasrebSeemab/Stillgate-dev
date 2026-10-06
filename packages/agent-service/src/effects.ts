@@ -1,5 +1,5 @@
-import { assertNever, type Effect, type LockState } from "@asd/shared";
-import type { Logger } from "@asd/shared/node";
+import { assertNever, type Effect, type LockState } from "@stillgate/shared";
+import type { Logger } from "@stillgate/shared/node";
 import type { ConfigStore } from "./config";
 import type { Clock } from "./deps";
 import { saveState } from "./state/persist";

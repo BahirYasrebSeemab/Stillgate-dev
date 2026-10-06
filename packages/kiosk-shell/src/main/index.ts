@@ -1,8 +1,8 @@
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { hasDebugSwitch } from "@asd/shared";
+import { hasDebugSwitch } from "@stillgate/shared";
 import { app, type BrowserWindow } from "electron";
-import { agentDataDir, createLogger, shellTokenFile } from "@asd/shared/node";
+import { agentDataDir, createLogger, shellTokenFile } from "@stillgate/shared/node";
 import type { KioskView, PushChannel } from "../common/api";
 import { AgentClient } from "./agent-client";
 import { registerIpc } from "./ipc";
@@ -18,7 +18,7 @@ let window: BrowserWindow | null = null;
 
 // Development captures only: keep painting even when other windows cover this one
 // (otherwise Windows' occlusion tracking makes captures show an old frame)
-if (process.env["ASD_DEV_CAPTURE_DIR"] !== undefined && !app.isPackaged) {
+if (process.env["STILLGATE_DEV_CAPTURE_DIR"] !== undefined && !app.isPackaged) {
   app.commandLine.appendSwitch("disable-features", "CalculateNativeWinOcclusion");
 }
 
@@ -44,7 +44,7 @@ function start(): void {
     view = { state, receivedAt: Date.now() };
     // Locked (or agent unreachable): stay on top of everything. Unlocked: let launched apps show.
     const unlocked = state?.lock === "UNLOCKED";
-    if (process.env["ASD_KIOSK_WINDOWED"] !== "1" || app.isPackaged) window?.setAlwaysOnTop(!unlocked, "screen-saver");
+    if (process.env["STILLGATE_KIOSK_WINDOWED"] !== "1" || app.isPackaged) window?.setAlwaysOnTop(!unlocked, "screen-saver");
     if (!unlocked) window?.focus();
     window?.webContents.send(PUSH, view);
     captureForDevelopment(state?.lock ?? "agent-unreachable");
@@ -54,18 +54,18 @@ function start(): void {
   agent.start();
   // Installed: never quit. Development windowed mode: closing the window ends the app.
   app.on("window-all-closed", () => {
-    if (process.env["ASD_KIOSK_WINDOWED"] === "1" && !app.isPackaged) app.quit();
+    if (process.env["STILLGATE_KIOSK_WINDOWED"] === "1" && !app.isPackaged) app.quit();
   });
   log.info("kiosk_shell_started", { agentDataDir: agentDataDir() });
 }
 
-// Development only: ASD_DEV_CAPTURE_DIR=<folder> saves a picture of THIS window (not the screen)
+// Development only: STILLGATE_DEV_CAPTURE_DIR=<folder> saves a picture of THIS window (not the screen)
 // shortly after every state change, so the UI can be checked without looking at the PC.
 let captureCount = 0;
 // It also writes the page's visible TEXT, which is reliable even when Windows has stopped
 // repainting the window because other windows cover it.
 function captureForDevelopment(label: string): void {
-  const dir = process.env["ASD_DEV_CAPTURE_DIR"];
+  const dir = process.env["STILLGATE_DEV_CAPTURE_DIR"];
   if (dir === undefined || app.isPackaged) return;
   const name = `${String(++captureCount).padStart(2, "0")}-${label}`;
   setTimeout(() => {

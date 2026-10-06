@@ -9,8 +9,8 @@ import {
   type AgentToServer,
   type MachineId,
   type ServerToAgent,
-} from "@asd/shared";
-import { authMac, randomHex, safeEqualHex, type Logger } from "@asd/shared/node";
+} from "@stillgate/shared";
+import { authMac, randomHex, safeEqualHex, type Logger } from "@stillgate/shared/node";
 import { WebSocketServer, type WebSocket } from "ws";
 import type { AuthLimiter } from "./guards";
 

@@ -1,4 +1,4 @@
-import type { Logger } from "@asd/shared/node";
+import type { Logger } from "@stillgate/shared/node";
 import type { Exec } from "./exec";
 
 // shutdown.exe flags:  /r = restart   /s = shut down   /a = abort a pending shutdown

@@ -12,8 +12,8 @@ import {
   ok,
   type Result,
   type ServerToAgent,
-} from "@asd/shared";
-import { hashPassword, randomHex, type Logger } from "@asd/shared/node";
+} from "@stillgate/shared";
+import { hashPassword, randomHex, type Logger } from "@stillgate/shared/node";
 import type { CommandOutcome, MachineCommand, MachineView, PairingOffer, Snapshot } from "../common/api";
 import type { SecretBox } from "./secret-box";
 import { AgentServer, type AgentEvent, type PairReply, type PairRequest, type StateReport } from "./server/agent-server";

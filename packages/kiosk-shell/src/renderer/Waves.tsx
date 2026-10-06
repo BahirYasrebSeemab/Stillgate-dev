@@ -8,17 +8,17 @@ type Wave = {
   readonly amplitude: number;
   readonly period: number; // must divide 1200 so the loop is seamless
   readonly seconds: number; // one loop
-  readonly color: "burgundy" | "light";
+  readonly color: "burgundy" | "navy";
   readonly width: number;
   readonly opacity: number;
 };
 
 const WAVES: readonly Wave[] = [
-  { y: 150, amplitude: 38, period: 1200, seconds: 38, color: "light", width: 2.5, opacity: 0.35 },
+  { y: 150, amplitude: 38, period: 1200, seconds: 38, color: "navy", width: 2.5, opacity: 0.35 },
   { y: 175, amplitude: 26, period: 600, seconds: 26, color: "burgundy", width: 2, opacity: 0.45 },
-  { y: 200, amplitude: 44, period: 400, seconds: 31, color: "light", width: 1.5, opacity: 0.25 },
+  { y: 200, amplitude: 44, period: 400, seconds: 31, color: "navy", width: 1.5, opacity: 0.25 },
   { y: 220, amplitude: 30, period: 1200, seconds: 45, color: "burgundy", width: 3, opacity: 0.3 },
-  { y: 245, amplitude: 20, period: 300, seconds: 22, color: "light", width: 1.5, opacity: 0.35 },
+  { y: 245, amplitude: 20, period: 300, seconds: 22, color: "navy", width: 1.5, opacity: 0.35 },
   { y: 265, amplitude: 34, period: 600, seconds: 34, color: "burgundy", width: 1.5, opacity: 0.25 },
 ];
 

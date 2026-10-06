@@ -1,4 +1,4 @@
-# CLAUDE.md — ASD Lab Lock (teaching edition)
+# CLAUDE.md — Stillgate (teaching edition)
 
 Instructions for Claude Code. Read this whole file before doing anything. Follow it exactly.
 
@@ -30,7 +30,7 @@ Sections 1–6 describe **what** the finished project is. Section 7 describes **
 
 ## 1. What we are building
 
-**ASD Lab Lock** is Windows lockdown software for the visitor computers at American Space Dushanbe (ASD).
+**Stillgate** is Windows lockdown software for the visitor computers at American Space Dushanbe (ASD).
 
 - **4 visitor PCs**, all **Windows 11 Home** (no paid editions, so no Shell Launcher, Assigned Access, AppLocker, or Group Policy editor).
 - **1 manager PC** (the 5th machine, stays on most of the time) that runs the server and the manager app.
@@ -54,7 +54,7 @@ What it must do:
 ### Monorepo layout (Bun workspaces) — the target Bahir builds toward
 
 ```
-asd-lab-lock/
+stillgate/
 ├── CLAUDE.md                 (this file)
 ├── PROGRESS.md               (you maintain this; section 7)
 ├── README.md                 project overview (Bahir writes it)
@@ -162,14 +162,14 @@ Pure TypeScript, no Electron or Windows calls. Everything here gets unit tests (
   - Site entry: `{ id, name, pattern }` where `pattern` follows the Chrome/Edge URL filter format (`[scheme://][.]host[:port][/path]`). Validation must **reject** `*`, empty hosts, and anything broader than a specific host.
   - `buildBrowserPolicy(sites)` returns the Edge policy values: `URLBlocklist: ["*"]`, `URLAllowlist: [...]`, plus hardening (verify exact names in Microsoft's Edge policy docs before teaching them): InPrivate disabled, guest mode off, developer tools disallowed, first-run page allowed.
 - **State machine** as a pure reducer (`(state, event, now) → state + side-effect list`), so the timer logic is fully testable without a clock or Windows.
-- **Pairing string** encode/decode: `asd1:<ip>:<port>:<sha256-cert-fingerprint>:<one-time-code>`.
+- **Pairing string** encode/decode: `sg1:<ip>:<port>:<sha256-cert-fingerprint>:<one-time-code>`.
 - Tests for: state machine transitions, boot rule, timer math, password hash/verify, allow-list matching (including path tricks like `..`, different casing, look-alike folders), pattern validation, pairing string, message validation.
 
 ### 4.2 `packages/agent-service`
 
 A Node process that runs as a Windows service (wrapped by WinSW; XML lives in `tools/service-wrapper/`). Modules:
 
-- `config/` — paths under `%ProgramData%\AsdLabLock\`, atomic load/save, schema-validated. Holds: machineId, server address + pinned cert fingerprint, secret, password hash, kiosk username + SID, enforcement mode, state file.
+- `config/` — paths under `%ProgramData%\Stillgate\`, atomic load/save, schema-validated. Holds: machineId, server address + pinned cert fingerprint, secret, password hash, kiosk username + SID, enforcement mode, state file.
 - `state/` — runs the shared reducer, monotonic timer, persistence with boot marker.
 - `server-link/` — WebSocket client, TLS **certificate pinning by fingerprint** (ignore the CA system; trust only the pinned cert), auto-reconnect with backoff, works fully offline. **While disconnected, the PC keeps its current state and never unlocks itself.**
 - `shell-ipc/` — loopback server for the kiosk shell. Commands the shell may send: `getState`, `subscribe`, `launchApp(id)`, `openSite(id)`, `restore(password)`. **Nothing else.** The shell sends **ids**, never paths.

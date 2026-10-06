@@ -1,4 +1,4 @@
-# PROGRESS — ASD Lab Lock
+# PROGRESS — Stillgate
 
 Maintained by Claude. Read at the start of every session, then `PLAN.md` / `docs/`.
 

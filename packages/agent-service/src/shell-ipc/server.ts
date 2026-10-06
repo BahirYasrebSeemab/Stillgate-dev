@@ -11,8 +11,8 @@ import {
   type ShellResult,
   type ShellState,
   type SiteId,
-} from "@asd/shared";
-import { safeEqualHex, type Logger } from "@asd/shared/node";
+} from "@stillgate/shared";
+import { safeEqualHex, type Logger } from "@stillgate/shared/node";
 import type { RestoreError } from "../password/restore";
 
 // Loopback server for the kiosk shell: one JSON object per line on 127.0.0.1 only.

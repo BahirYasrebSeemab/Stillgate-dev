@@ -8,8 +8,8 @@ import {
   type AgentToShell,
   type ShellRequest,
   type ShellState,
-} from "@asd/shared";
-import { readJson, type Logger } from "@asd/shared/node";
+} from "@stillgate/shared";
+import { readJson, type Logger } from "@stillgate/shared/node";
 
 // The kiosk shell's line to the agent service: 127.0.0.1 TCP, one JSON object per line.
 // It reads the token file (only the kiosk user can read it), subscribes to state pushes,

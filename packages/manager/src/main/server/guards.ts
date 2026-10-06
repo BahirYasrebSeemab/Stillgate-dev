@@ -1,5 +1,5 @@
-import { AUTH_BLOCK_MS, AUTH_FAIL_LIMIT, AUTH_FAIL_WINDOW_MS, PAIRING_CODE_TTL_MS } from "@asd/shared";
-import { generatePairingCode } from "@asd/shared/node";
+import { AUTH_BLOCK_MS, AUTH_FAIL_LIMIT, AUTH_FAIL_WINDOW_MS, PAIRING_CODE_TTL_MS } from "@stillgate/shared";
+import { generatePairingCode } from "@stillgate/shared/node";
 
 // Limits failed logins/pairings per IP address:
 // 10 failures within 5 minutes -> that address is ignored for 15 minutes.

@@ -9,7 +9,7 @@ const CSP =
 
 function contentSecurityPolicy(): Plugin {
   return {
-    name: "asd-csp",
+    name: "stillgate-csp",
     apply: "build",
     transformIndexHtml: () => [{ tag: "meta", attrs: { "http-equiv": "Content-Security-Policy", content: CSP }, injectTo: "head-prepend" }],
   };
@@ -20,7 +20,7 @@ export default defineConfig({
   base: "./",
   plugins: [react(), contentSecurityPolicy()],
   resolve: {
-    alias: { "@asd/shared": fileURLToPath(new URL("../shared/src/index.ts", import.meta.url)) },
+    alias: { "@stillgate/shared": fileURLToPath(new URL("../shared/src/index.ts", import.meta.url)) },
   },
   build: { outDir: "../../dist/renderer", emptyOutDir: true },
   server: { port: 5174, strictPort: true },

@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent, type WheelEvent } from "react";
-import { EXPIRY_WARNING_SEC, type ShellState } from "@asd/shared";
+import { EXPIRY_WARNING_SEC, type ShellState } from "@stillgate/shared";
 import type { RestoreFailure } from "../common/api";
-import logoUrl from "../../assets/logo.svg";
+import logoUrl from "../../assets/logo.png";
 import { api, formatClock } from "./api";
 import { t } from "./strings";
 import { Waves } from "./Waves";
@@ -20,9 +20,15 @@ export function LockedScreen({ serviceDown }: { readonly serviceDown: boolean })
         <h1>{t.locked.title}</h1>
         <p className="big">{t.locked.askDesk}</p>
       </div>
+      <BrandMark />
       {serviceDown && <p className="small-note">{t.locked.serviceDown}</p>}
     </div>
   );
+}
+
+// The product's signature, small in a corner of the kiosk screens
+function BrandMark() {
+  return <p className="brand-mark">{t.brand}</p>;
 }
 
 export function MaintenanceScreen() {
@@ -32,6 +38,7 @@ export function MaintenanceScreen() {
         <h1>{t.maintenance.title}</h1>
         <p className="big">{t.maintenance.detail}</p>
       </div>
+      <BrandMark />
     </div>
   );
 }
@@ -112,6 +119,7 @@ export function Launcher({ state, remainingSec }: LauncherProps) {
           )}
         </div>
       )}
+      <BrandMark />
     </div>
   );
 }

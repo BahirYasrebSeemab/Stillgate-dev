@@ -1,4 +1,4 @@
-# PLAN.md — ASD Lab Lock master plan
+# PLAN.md — Stillgate master plan
 
 > **Update 2026-10-01:** at Bahir's request the whole project was then BUILT by Claude (see `PROGRESS.md`). This plan is kept as the original map; where the build differs, `docs/DECISIONS.md` is the source of truth, and `docs/learn/` explains what was built.
 
@@ -35,15 +35,15 @@ Written at Bahir's request, as the map for all future coaching sessions.
 
 | # | Decision | Why |
 |---|---|---|
-| D1 | Package names are `@asd/shared`, `@asd/agent-service`, `@asd/kiosk-shell`, `@asd/manager`. They are linked with `"@asd/shared": "workspace:*"`. | Scoped names can't collide with npm packages, and `workspace:*` means "use the local folder". |
+| D1 | Package names are `@stillgate/shared`, `@stillgate/agent-service`, `@stillgate/kiosk-shell`, `@stillgate/manager`. They are linked with `"@stillgate/shared": "workspace:*"`. | Scoped names can't collide with npm packages, and `workspace:*` means "use the local folder". |
 | D2 | All compiled output is **CommonJS**. No `"type": "module"`. tsconfig uses `module` and `moduleResolution` = `NodeNext`. | Sandboxed Electron preload must be CommonJS, and Electron main is CommonJS per `CLAUDE.md`. One module system everywhere. |
 | D3 | `tsconfig.base.json` sets: `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`, `noFallthroughCasesInSwitch`, `forceConsistentCasingInFileNames`, `isolatedModules`, `skipLibCheck`, `declaration`, `sourceMap`, `target: "ES2022"`. Every package uses `extends`. | Maximum safety, and every flag is a teaching moment. Consider `verbatimModuleSyntax`; **VERIFY** that it's comfortable with CJS output first. |
 | D4 | TS project references: root `tsconfig.json` has `"files": []` plus `references`, and each package sets `composite: true`. The build command is `bun x tsc -b`. | `tsc -b` builds `shared` first, which is how real monorepos build. |
-| D5 | `@asd/shared` `exports` map: condition `"bun"` → `./src/index.ts`, `"types"` → `./dist/index.d.ts`, `"default"` → `./dist/index.js`. Also a `"./node"` subpath for Node-only helpers. | Bun tests use TS source with no build step; Node and Electron use compiled JS. **VERIFY** the `"bun"` condition in the Bun docs. |
+| D5 | `@stillgate/shared` `exports` map: condition `"bun"` → `./src/index.ts`, `"types"` → `./dist/index.d.ts`, `"default"` → `./dist/index.js`. Also a `"./node"` subpath for Node-only helpers. | Bun tests use TS source with no build step; Node and Electron use compiled JS. **VERIFY** the `"bun"` condition in the Bun docs. |
 | D6 | Validation uses zod. Every object schema is `.strict()`. **VERIFY** the API of the zod major version that actually installs. | This covers "reject unknown messages" from `CLAUDE.md`. |
 | D7 | Expected failures return `Result<T,E>` = `{ok:true,value} \| {ok:false,error}`. Throw only for programmer bugs. | The compiler forces callers to handle failure. |
 | D8 | Ports: server **47800** (TLS WebSocket), shell↔agent loopback **47831**. Both configurable. | Fixed in `CLAUDE.md`. |
-| D9 | Data dir is `%ProgramData%\AsdLabLock\`. In dev, the env var `ASD_DATA_DIR` overrides it (e.g. `./.dev-data`, gitignored). | Lets the agent run in WSL during Phase A. |
+| D9 | Data dir is `%ProgramData%\Stillgate\`. In dev, the env var `STILLGATE_DATA_DIR` overrides it (e.g. `./.dev-data`, gitignored). | Lets the agent run in WSL during Phase A. |
 | D10 | Every JSON file has `schemaVersion: 1` and is written atomically: temp file → fsync → rename. | A tiny stand-in for Alembic, and a crash never leaves a half-written file. |
 | D11 | Shell↔agent traffic is **newline-delimited JSON over raw TCP** on 127.0.0.1. There's no HTTP/WebSocket on that port. The socket is destroyed if the first line isn't valid JSON with the right token, or if a line looks like an HTTP request (`GET `, `POST `, contains `Origin:`). Max line length is 16 KiB. | Browsers can reach localhost over HTTP/WebSocket but can't speak raw TCP, so web pages can't talk to the agent. Satisfies the Origin rule. |
 | D12 | The kiosk-shell **main process** (running as the kiosk user) launches apps. It asks the agent `launchApp(appId)`. The agent checks state is UNLOCKED and the id is in the policy, then returns `{exePath, args}`. Shell main spawns it with an argument array. `openSite(siteId)` works the same: the agent returns a URL, and shell main opens Edge with that URL as its argument. | A SYSTEM service can't start a process as another user without native code, which the project forbids. The enforcer remains the real guard. |
@@ -52,7 +52,7 @@ Written at Bahir's request, as the map for all future coaching sessions.
 | D15 | Named constants in `shared/src/constants.ts`: <br>• `durationSec` 60–43200 <br>• restore password ≥ 10 characters <br>• maintenance 1800 s <br>• WS `maxPayload` 64 KiB <br>• heartbeat 15 s; offline after 45 s <br>• reconnect backoff 1 s doubling to 60 s, ±20 % jitter <br>• failed auth: 10 per IP per 5 min → block 15 min <br>• restore lockout per `CLAUDE.md` <br>• event log max 5000 | No magic numbers. |
 | D16 | scrypt parameters `{N: 2**15, r: 8, p: 1, keylen: 64}` with `maxmem` 64 MiB. | Node's default `maxmem` is too small for these parameters, and that makes a good trap to teach. **VERIFY** in the Node crypto docs. |
 | D17 | The hotkey uses `KeyboardEvent.code` (`Space`, `KeyB`, `KeyY`, `KeyS`), not `.key`. | Russian/Tajik keyboard layouts change `.key`. `.code` is the physical key. |
-| D18 | Pairing string is IPv4 only: `asd1:<ipv4>:<port>:<64 lowercase hex>:<code>`. The code is 8 chars from `ABCDEFGHJKMNPQRSTUVWXYZ23456789`. | IPv6 contains colons. Document this limitation. |
+| D18 | Pairing string is IPv4 only: `sg1:<ipv4>:<port>:<64 lowercase hex>:<code>`. The code is 8 chars from `ABCDEFGHJKMNPQRSTUVWXYZ23456789`. | IPv6 contains colons. Document this limitation. |
 | D19 | Logs are JSON lines, rotated at about 5 MB, 3 files kept. They never contain fields named password, secret, token, hash, or salt. | `CLAUDE.md` §6. |
 | D20 | Commits: one line, ≤ 50 chars, lowercase, imperative. Never a Claude/co-author trailer. | Hard rule 6. |
 

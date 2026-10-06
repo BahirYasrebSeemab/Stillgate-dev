@@ -1,14 +1,14 @@
 import { join } from "node:path";
 import { BrowserWindow, app, screen, session, type Input } from "electron";
-import type { Logger } from "@asd/shared/node";
+import type { Logger } from "@stillgate/shared/node";
 
 // The kiosk window: full screen, no frame, cannot be closed, cannot navigate anywhere.
 // Visitors can attack this window, so it gets no power: sandboxed, no Node, and every
 // privileged action goes through the agent.
 
-export const DEV_SERVER_URL = process.env["ASD_DEV_SERVER_URL"];
+export const DEV_SERVER_URL = process.env["STILLGATE_DEV_SERVER_URL"];
 // Development only: a normal, closable window instead of the full-screen kiosk (ignored when installed)
-const WINDOWED = process.env["ASD_KIOSK_WINDOWED"] === "1" && !app.isPackaged;
+const WINDOWED = process.env["STILLGATE_KIOSK_WINDOWED"] === "1" && !app.isPackaged;
 
 // Shortcuts that would reload the page, open DevTools, zoom or close things
 const BLOCKED_KEYS = new Set(["F5", "F11", "F12"]);

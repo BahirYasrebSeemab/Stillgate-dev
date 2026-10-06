@@ -11,7 +11,7 @@
     "jsx": "react-jsx",
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "types": [],
-    "paths": { "@asd/shared": ["../shared/src/index.ts"] }
+    "paths": { "@stillgate/shared": ["../shared/src/index.ts"] }
   },
   "include": ["src/renderer", "src/common"]
 }

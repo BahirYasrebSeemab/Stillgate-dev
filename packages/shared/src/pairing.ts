@@ -3,10 +3,10 @@ import { err, ok, type Result } from "./result";
 import { isIPv4 } from "./site-pattern";
 
 // The pairing string the manager shows and the agent's `pair` command accepts:
-//   asd1:<ipv4>:<port>:<sha256 cert fingerprint, 64 hex>:<one-time code>
+//   sg1:<ipv4>:<port>:<sha256 cert fingerprint, 64 hex>:<one-time code>
 // IPv4 only in v1, because IPv6 addresses contain ':' themselves.
 
-export const PAIRING_PREFIX = "asd1";
+export const PAIRING_PREFIX = "sg1";
 const FINGERPRINT = /^[0-9a-f]{64}$/;
 const MAX_PORT = 65535;
 

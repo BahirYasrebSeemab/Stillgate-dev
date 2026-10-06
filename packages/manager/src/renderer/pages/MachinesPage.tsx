@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MAX_UNLOCK_SEC, MIN_UNLOCK_SEC, type MachineId } from "@asd/shared";
+import { MAX_UNLOCK_SEC, MIN_UNLOCK_SEC, type MachineId } from "@stillgate/shared";
 import type { MachineCommand, MachineView, Snapshot } from "../../common/api";
 import { api, formatDuration, formatTime, useNow } from "../api";
 import { t } from "../strings";

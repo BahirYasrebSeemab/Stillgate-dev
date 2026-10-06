@@ -2,7 +2,7 @@
 // TYPES ONLY: the sandboxed preload may not load other files at runtime,
 // so it imports this file with `import type` (erased when compiled).
 
-import type { EnforcementMode, LockStateName, MachineId, Policy, Result } from "@asd/shared";
+import type { EnforcementMode, LockStateName, MachineId, Policy, Result } from "@stillgate/shared";
 
 export type MachineView = {
   readonly id: MachineId;
@@ -54,7 +54,7 @@ export type CommandOutcome = { readonly id: MachineId; readonly delivered: boole
 
 export type PairingOffer = { readonly pairingString: string; readonly expiresAt: number };
 
-// The API the preload script exposes to the UI as window.asd
+// The API the preload script exposes to the UI as window.stillgate
 export interface ManagerApi {
   getSnapshot(): Promise<Snapshot>;
   onUpdate(listener: (snapshot: Snapshot) => void): () => void;
@@ -69,12 +69,12 @@ export interface ManagerApi {
 
 // IPC channel names (string literal types, checked at compile time on both sides)
 export type InvokeChannel =
-  | "asd:snapshot"
-  | "asd:command"
-  | "asd:rename"
-  | "asd:revoke"
-  | "asd:savePolicy"
-  | "asd:setPassword"
-  | "asd:createPairing"
-  | "asd:copy";
-export type PushChannel = "asd:update";
+  | "stillgate:snapshot"
+  | "stillgate:command"
+  | "stillgate:rename"
+  | "stillgate:revoke"
+  | "stillgate:savePolicy"
+  | "stillgate:setPassword"
+  | "stillgate:createPairing"
+  | "stillgate:copy";
+export type PushChannel = "stillgate:update";

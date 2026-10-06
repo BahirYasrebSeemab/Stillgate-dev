@@ -11,8 +11,8 @@ import {
   type ShellState,
   type ShellTokenFile,
   type SiteId,
-} from "@asd/shared";
-import { randomHex, writeJsonAtomic, type Logger } from "@asd/shared/node";
+} from "@stillgate/shared";
+import { randomHex, writeJsonAtomic, type Logger } from "@stillgate/shared/node";
 import { handleServerCommand } from "./commands";
 import { ConfigStore, pairingOf } from "./config";
 import { processControlRequests, type ControlRequest } from "./control";
@@ -34,7 +34,7 @@ import { Registry } from "./windows/registry";
 // Wires every part of the agent together. main.ts only starts and stops it.
 
 const CONTROL_POLL_MS = 1000;
-const DEFAULT_KIOSK_DIR = "C:\\Program Files\\AsdLabLock\\kiosk-shell";
+const DEFAULT_KIOSK_DIR = "C:\\Program Files\\Stillgate\\kiosk-shell";
 
 export type Agent = { start(): Promise<void>; stop(): Promise<void> };
 

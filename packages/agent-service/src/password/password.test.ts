@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { hashPassword, silentLogger } from "@asd/shared/node";
+import { hashPassword, silentLogger } from "@stillgate/shared/node";
 import { FRESH_LIMIT, recordFailure, retryAfterSec } from "./rate-limit";
 import { RestoreGuard } from "./restore";
 

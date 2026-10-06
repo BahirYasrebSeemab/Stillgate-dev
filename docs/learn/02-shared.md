@@ -8,8 +8,8 @@ There are two entry points:
 
 | Import | Contains | Can run in |
 |---|---|---|
-| `@asd/shared` | types, zod schemas, pure logic | anywhere: Node, Bun, **and** the browser-like Electron windows |
-| `@asd/shared/node` | password hashing, files, logging | Node only (it uses `node:crypto` and `node:fs`) |
+| `@stillgate/shared` | types, zod schemas, pure logic | anywhere: Node, Bun, **and** the browser-like Electron windows |
+| `@stillgate/shared/node` | password hashing, files, logging | Node only (it uses `node:crypto` and `node:fs`) |
 
 **Why two?** The manager's UI runs in a sandboxed browser window, and a browser has no `node:crypto`. If the main entry imported it, the UI would break. So everything Node-only lives behind the second door.
 
@@ -143,7 +143,7 @@ reduce(state, event, now) → { state, effects }
 - **TS idea: `assertNever`.** If someone adds a new state or event and forgets to handle it, the code **stops compiling**.
 
 ### `pairing.ts`
-`asd1:<ip>:<port>:<fingerprint>:<code>` with `encodePairing` and `decodePairing`. It's IPv4 only, because IPv6 addresses contain `:` themselves.
+`sg1:<ip>:<port>:<fingerprint>:<code>` with `encodePairing` and `decodePairing`. It's IPv4 only, because IPv6 addresses contain `:` themselves.
 
 ### `password-rules.ts`
 `checkNewPassword(pw, confirm)`: at least 10 characters, both copies match, no leading or trailing spaces. The manager UI and the manager server both use it.

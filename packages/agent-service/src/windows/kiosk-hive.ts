@@ -1,4 +1,4 @@
-import type { Logger } from "@asd/shared/node";
+import type { Logger } from "@stillgate/shared/node";
 import type { KioskConfig } from "../config";
 import type { Registry } from "./registry";
 
@@ -7,7 +7,7 @@ import type { Registry } from "./registry";
 // do the work, and unmount it again.
 // UNTESTED(windows): reg load / reg unload of another user's hive.
 
-const MOUNT_NAME = "HKU\\AsdLabLockKiosk";
+const MOUNT_NAME = "HKU\\StillgateKiosk";
 const PROFILE_LIST = "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList";
 
 export async function withKioskHive<T>(

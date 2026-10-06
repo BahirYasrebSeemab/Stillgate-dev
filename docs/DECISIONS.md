@@ -8,7 +8,7 @@ D1–D20 were made in `PLAN.md` (Part 2). This file is the up-to-date list, incl
 | 2 | All Node-side output is **CommonJS** (no `"type":"module"`), `module`/`moduleResolution` = `NodeNext`. | Electron's sandboxed preload must be CJS; one module system everywhere. |
 | 3 | `verbatimModuleSyntax` **not** used. | It conflicts with CJS output (it would force `import x = require()`). |
 | 4 | TS project references + `tsc -b`; each package has `composite: true`. | Builds in dependency order, and only rebuilds what changed. |
-| 5 | `@asd/shared` exports: `"bun"` → TS source, `"types"` → `.d.ts`, `"default"` → JS. Subpath `@asd/shared/node` for Node-only code. | Bun tests need no build; the browser-side UIs never pull in `node:crypto`. |
+| 5 | `@stillgate/shared` exports: `"bun"` → TS source, `"types"` → `.d.ts`, `"default"` → JS. Subpath `@stillgate/shared/node` for Node-only code. | Bun tests need no build; the browser-side UIs never pull in `node:crypto`. |
 | 6 | TypeScript **7** (the Go rewrite) is used. | It was the current version at install time; `tsc -b` and CJS output were both checked. |
 | 7 | zod 4, every object schema **strict**. | Unknown keys are rejected: "reject unknown messages". |
 | 8 | Expected failures return `Result<T,E>`; `throw` is for bugs only. | Failure becomes part of the type, so callers must handle it. |
@@ -32,7 +32,7 @@ D1–D20 were made in `PLAN.md` (Part 2). This file is the up-to-date list, incl
 | 26 | The kiosk window allows closing **only** when Windows ends the session (`query-session-end` / `session-end`). | Otherwise it would block the restart that maintenance depends on. |
 | 27 | No policy XML for WDAC in the repo; audit-only instructions instead. | A wrong enforced policy can make a PC unbootable; build it from Microsoft's template on real hardware. |
 | 28 | Process listing = **one long-running PowerShell** (started once), owners from `Get-Process -IncludeUserName`, paths from **one** CIM query, output forced to **UTF-8**. | Measured on Windows: CIM `GetOwner` per process = 16 s; reading `Get-Process .Path` = 2 s; PowerShell start-up = 0.9 s. Now ~0.27 s. Without UTF-8, Cyrillic names became `???`. |
-| 29 | Development-only switches, ignored when installed: `ASD_KIOSK_WINDOWED=1` (normal window), `ASD_SERVER_HOST` (manager binds 127.0.0.1), `ASD_DEV_CAPTURE_DIR` (each app saves a picture + the text of its **own window**, never the screen). | Lets the apps be tested on a developer PC without taking it over, the firewall pop-up, or screenshots of private screens. |
+| 29 | Development-only switches, ignored when installed: `STILLGATE_KIOSK_WINDOWED=1` (normal window), `STILLGATE_SERVER_HOST` (manager binds 127.0.0.1), `STILLGATE_DEV_CAPTURE_DIR` (each app saves a picture + the text of its **own window**, never the screen). | Lets the apps be tested on a developer PC without taking it over, the firewall pop-up, or screenshots of private screens. |
 | 30 | Pairing strings tolerate surrounding quotes/spaces. | Real Windows shells passed the quotes through as part of the text. |
 | 31 | Bun test timeout 20 s (`bunfig.toml`). | The real-scrypt tests once exceeded Bun's 5 s default on a busy machine. |
 | 32 | Kiosk user names must be English letters/digits (`[A-Za-z0-9._ -]`). | `reg.exe` output uses the OEM code page; non-ASCII names and paths could be misread. `check-pc.ps1` warns. |
@@ -40,3 +40,7 @@ D1–D20 were made in `PLAN.md` (Part 2). This file is the up-to-date list, incl
 | 34 | Website tile icons: the kiosk **main process** reads the site's `<link rel=icon>` tags, downloads (public addresses only, 20 s, 256 KB), decodes `.ico` itself (PNG or bitmap entries), re-encodes to PNG, caches on disk. | Tested on real sites: `/favicon.ico` often 403/404; Electron can't decode `.ico`; `net.fetch` breaks with abort signals; the network is slow. |
 | 35 | Electron **fuses** + refuse debugger switches in installed builds. | Security review: otherwise the always-allowed kiosk folder could run arbitrary code. |
 | 36 | No remote "kill switch". | A remote way to disable deployed systems is a backdoor and a risk in itself; the system is LAN-only by design. |
+
+## 37. The product is called Stillgate (2026-10-06)
+**Decision:** every product name, folder, service, IPC channel and package scope is "Stillgate" (`@stillgate/*`, `C:\Program Files\Stillgate`, `C:\ProgramData\Stillgate`, service `stillgate-agent`, pairing prefix `sg1:`). Only the kiosk's look (logo, welcome text) is per-site; this build uses the American Space Dushanbe logo (`packages/kiosk-shell/assets/logo.png`) on a white locked page.
+**Why:** the software is generic; the site it runs at is just configuration. **Cost:** PCs installed with the old names must be uninstalled with the old script and re-installed and re-paired (new folders, new service name, new manager data folder).

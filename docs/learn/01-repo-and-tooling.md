@@ -17,9 +17,9 @@ docs/                 architecture, decisions, security, recovery, learn/
 ```
 
 ## How packages find each other
-- `"@asd/shared": "workspace:*"` in a package's dependencies means "use the folder in this repo".
+- `"@stillgate/shared": "workspace:*"` in a package's dependencies means "use the folder in this repo".
 - Bun 1.4 uses the **isolated linker**: each package gets its own `node_modules` with **only what it declared**. A package can't accidentally import something it forgot to list. That's why the agent, manager and kiosk shell each list `zod` themselves.
-- `shared`'s `exports` map has three conditions: `"bun"` → TS source (tests need no build), `"types"` → `.d.ts`, `"default"` → compiled JS. The subpath `@asd/shared/node` holds the Node-only helpers.
+- `shared`'s `exports` map has three conditions: `"bun"` → TS source (tests need no build), `"types"` → `.d.ts`, `"default"` → compiled JS. The subpath `@stillgate/shared/node` holds the Node-only helpers.
 
 ## TypeScript settings (tsconfig.base.json)
 | Option | What it does |

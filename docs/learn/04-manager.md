@@ -17,7 +17,7 @@
 ## Electron in 4 ideas
 1. **Main process** = Node.js with full power (files, network, OS). One per app.
 2. **Renderer** = a Chromium page running our React UI. We give it **no Node access** (`nodeIntegration: false`, `sandbox: true`), so even a bug in the UI can't touch files or the network.
-3. **Preload** = a tiny script that runs before the page and can use `contextBridge` to put a **fixed API** on `window.asd`. The page never gets `ipcRenderer` itself.
+3. **Preload** = a tiny script that runs before the page and can use `contextBridge` to put a **fixed API** on `window.stillgate`. The page never gets `ipcRenderer` itself.
 4. **IPC** = messages between renderer and main (`ipcRenderer.invoke` ↔ `ipcMain.handle`), like `fetch` ↔ route handler.
 
 ## Main process files (`src/main/`)
@@ -49,9 +49,9 @@
 6. A newer connection for the same machine replaces the old one.
 
 ## Preload (`src/preload/index.ts`)
-It exposes `window.asd` with exactly the `ManagerApi` functions.
+It exposes `window.stillgate` with exactly the `ManagerApi` functions.
 - **Trap:** a sandboxed preload may only `require("electron")`, so it imports our shared types with `import type`, which is erased at compile time.
-- Channel names are **string-literal types** (`"asd:command" | …`), so a typo is a compile error on both sides.
+- Channel names are **string-literal types** (`"stillgate:command" | …`), so a typo is a compile error on both sides.
 
 ## Renderer (React UI, `src/renderer/`)
 - `api.ts`:
@@ -69,7 +69,7 @@ It exposes `window.asd` with exactly the `ManagerApi` functions.
 |---|---|---|
 | `tsconfig.json` | main + preload + common, compiled by `tsc` | CommonJS output for Electron |
 | `tsconfig.renderer.json` | the UI, **type-check only** | DOM types, `jsx: react-jsx`, `moduleResolution: Bundler`; Vite bundles it |
-| `vite.config.mts` | builds the UI into `dist/renderer` | `.mts` forces ESM for the config file. `@asd/shared` is aliased to its **TypeScript source**, because its `dist/` is CommonJS made for Node, and Vite wants ESM |
+| `vite.config.mts` | builds the UI into `dist/renderer` | `.mts` forces ESM for the config file. `@stillgate/shared` is aliased to its **TypeScript source**, because its `dist/` is CommonJS made for Node, and Vite wants ESM |
 | `electron-builder.yml` | the Windows installer (`bun run dist`) | **run on Windows** |
 
 **Electron 44 note:** it no longer downloads its binary in an install script, so `trustedDependencies` isn't needed. The binary is fetched on demand: run `bun x install-electron` inside `packages/manager` before `bun run start`.

@@ -1,5 +1,5 @@
-import { EDGE_LIST_POLICIES, buildBrowserPolicy, type EdgeDwordPolicy, type SiteEntry } from "@asd/shared";
-import type { Logger } from "@asd/shared/node";
+import { EDGE_LIST_POLICIES, buildBrowserPolicy, type EdgeDwordPolicy, type SiteEntry } from "@stillgate/shared";
+import type { Logger } from "@stillgate/shared/node";
 import type { KioskConfig } from "../config";
 import { withKioskHive } from "./kiosk-hive";
 import type { Registry } from "./registry";

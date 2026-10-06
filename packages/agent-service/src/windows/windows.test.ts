@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
-import { Policy } from "@asd/shared";
-import { silentLogger } from "@asd/shared/node";
+import { Policy } from "@stillgate/shared";
+import { silentLogger } from "@stillgate/shared/node";
 import { FakeExec, KIOSK } from "../test-helpers/fakes";
 import { createExec } from "./exec";
 import { Lockdown } from "./lockdown";

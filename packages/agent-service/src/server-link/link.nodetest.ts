@@ -2,8 +2,8 @@
 // and the agent runs on Node in production. Run with: bun run test:node
 import assert from "node:assert/strict";
 import { after, describe, it } from "node:test";
-import { MachineId } from "@asd/shared";
-import { randomHex, silentLogger } from "@asd/shared/node";
+import { MachineId } from "@stillgate/shared";
+import { randomHex, silentLogger } from "@stillgate/shared/node";
 import { MACHINE_ID } from "../test-helpers/fakes";
 import { startTestServer, type TestServer } from "../test-helpers/test-server";
 import { reconnectDelayMs } from "./backoff";

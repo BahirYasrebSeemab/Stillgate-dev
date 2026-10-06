@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
-import { Policy } from "@asd/shared";
-import { silentLogger } from "@asd/shared/node";
+import { Policy } from "@stillgate/shared";
+import { silentLogger } from "@stillgate/shared/node";
 import { decideKills, type DecideInput } from "./decide";
 import { parseProcessList, userName, type ProcessInfo } from "./processes";
 
@@ -17,14 +17,14 @@ const input = (state: DecideInput["state"], processes: ProcessInfo[]): DecideInp
   processes,
   state,
   policy,
-  kioskShellDir: "C:\\Program Files\\AsdLabLock\\kiosk-shell",
+  kioskShellDir: "C:\\Program Files\\Stillgate\\kiosk-shell",
   windowsDir: "C:\\Windows",
 });
 
 const killed = (decisionInput: DecideInput) => decideKills(decisionInput).map((d) => d.reason);
 
 describe("decideKills", () => {
-  const shell = proc("C:\\Program Files\\AsdLabLock\\kiosk-shell\\kiosk-shell.exe");
+  const shell = proc("C:\\Program Files\\Stillgate\\kiosk-shell\\kiosk-shell.exe");
   const helper = proc("C:\\Windows\\System32\\conhost.exe");
   const cmd = proc("C:\\Windows\\System32\\cmd.exe");
   const paint = proc("C:\\Program Files\\Paint\\paint.exe");

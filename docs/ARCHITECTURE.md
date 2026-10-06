@@ -41,21 +41,21 @@ MAINTENANCE ──deadline / rearm──────▶ LOCKED          → shel
 - **Offline:** the agent keeps its state and never unlocks by itself.
 
 ## Message flow examples
-**Unlock:** desk clicks "Unlock 1 hour" → IPC `asd:command` → `ManagerService.sendCommand` → `{type:"unlock",durationSec:3600}` over wss → agent `handleServerCommand` → reducer → `UNLOCKED` → effects PERSIST + REPORT → `state_report` to the manager, and a push to the kiosk shell → the launcher appears.
+**Unlock:** desk clicks "Unlock 1 hour" → IPC `stillgate:command` → `ManagerService.sendCommand` → `{type:"unlock",durationSec:3600}` over wss → agent `handleServerCommand` → reducer → `UNLOCKED` → effects PERSIST + REPORT → `state_report` to the manager, and a push to the kiosk shell → the launcher appears.
 
 **Restore:** visitor or admin presses Space+B+Y+S → password panel → IPC `kiosk:restore` → kiosk main → `restore` over loopback → agent rate limit + scrypt check → `RESTORE_OK` → effects: remove lockdown, Shell=explorer (written **and read back**), save, report, **restart** (only if the read-back matched).
 
-**Pairing:** the manager shows `asd1:<ip>:<port>:<fingerprint>:<code>` → admin runs `cli pair "<string>"` on the PC → the agent connects and checks the **fingerprint before sending anything** → `pair_request{code}` → the manager checks the one-time code → it sends a new machine id + secret + password hash + policy → the agent saves them.
+**Pairing:** the manager shows `sg1:<ip>:<port>:<fingerprint>:<code>` → admin runs `cli pair "<string>"` on the PC → the agent connects and checks the **fingerprint before sending anything** → `pair_request{code}` → the manager checks the one-time code → it sends a new machine id + secret + password hash + policy → the agent saves them.
 
 ## Data on disk
 | Where | File | Contents |
 |---|---|---|
-| visitor PC `C:\ProgramData\AsdLabLock\` (SYSTEM + Admins only) | `config.json` | pairing (server, fingerprint, machine id, **secret**), password **hash**, policy, kiosk user, dryRun, enforcement |
+| visitor PC `C:\ProgramData\Stillgate\` (SYSTEM + Admins only) | `config.json` | pairing (server, fingerprint, machine id, **secret**), password **hash**, policy, kiosk user, dryRun, enforcement |
 | | `state.json` | lock state + boot marker |
 | | `shell\shell-token` (+ kiosk user read) | random token + port for the kiosk shell |
 | | `control\*.json` | requests from the admin CLI |
 | | `logs\agent.log` | JSON lines, rotated, secrets redacted |
-| manager `%APPDATA%\ASD Lab Manager\` (Electron user-data folder) | `machines.json` | machines; secrets **sealed** with DPAPI |
+| manager `%APPDATA%\Stillgate Manager\` (Electron user-data folder) | `machines.json` | machines; secrets **sealed** with DPAPI |
 | | `settings.json` | port, policy, password **hash**, TLS cert + **sealed** private key |
 | | `events.json` | last 5000 events |
 

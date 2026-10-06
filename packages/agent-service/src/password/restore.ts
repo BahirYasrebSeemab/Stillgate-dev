@@ -1,5 +1,5 @@
-import { DEFAULT_MAINTENANCE_SEC, err, ok, type PasswordRecord, type Result, type ShellErrorCode } from "@asd/shared";
-import { verifyPassword, type Logger } from "@asd/shared/node";
+import { DEFAULT_MAINTENANCE_SEC, err, ok, type PasswordRecord, type Result, type ShellErrorCode } from "@stillgate/shared";
+import { verifyPassword, type Logger } from "@stillgate/shared/node";
 import { FRESH_LIMIT, recordFailure, retryAfterSec, type RateLimit } from "./rate-limit";
 
 // Checks the restore password typed into the kiosk shell's hotkey panel.

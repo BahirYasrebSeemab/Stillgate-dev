@@ -1,7 +1,7 @@
 import type { IncomingMessage } from "node:http";
 import type { TLSSocket } from "node:tls";
-import { MAX_MESSAGE_BYTES, AUTH_TIMEOUT_MS } from "@asd/shared";
-import { certFingerprint, safeEqualHex, type Logger } from "@asd/shared/node";
+import { MAX_MESSAGE_BYTES, AUTH_TIMEOUT_MS } from "@stillgate/shared";
+import { certFingerprint, safeEqualHex, type Logger } from "@stillgate/shared/node";
 import WebSocket from "ws";
 
 // Opens a wss:// connection that trusts exactly ONE certificate: the one whose

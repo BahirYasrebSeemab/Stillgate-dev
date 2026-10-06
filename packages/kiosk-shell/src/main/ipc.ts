@@ -1,6 +1,6 @@
 import { app, ipcMain, type IpcMainInvokeEvent } from "electron";
-import { AppId, MAX_PASSWORD_CHARS, SiteId, err, ok, type Result } from "@asd/shared";
-import type { Logger } from "@asd/shared/node";
+import { AppId, MAX_PASSWORD_CHARS, SiteId, err, ok, type Result } from "@stillgate/shared";
+import type { Logger } from "@stillgate/shared/node";
 import { z } from "zod";
 import type { InvokeChannel, KioskView, RestoreFailure } from "../common/api";
 import type { AgentClient } from "./agent-client";

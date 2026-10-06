@@ -54,7 +54,7 @@ describe("challenge-response MAC", () => {
 });
 
 describe("atomic JSON files", async () => {
-  const dir = await mkdtemp(join(tmpdir(), "asd-test-"));
+  const dir = await mkdtemp(join(tmpdir(), "stillgate-test-"));
   const Schema = z.strictObject({ schemaVersion: z.literal(1), count: z.int() });
   afterAll(() => rm(dir, { recursive: true, force: true }));
 

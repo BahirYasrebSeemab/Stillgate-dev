@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { AppEntry, SiteEntry, describeZodError, type Policy } from "@asd/shared";
+import { AppEntry, SiteEntry, describeZodError, type Policy } from "@stillgate/shared";
 import { api } from "../api";
 import { t } from "../strings";
 

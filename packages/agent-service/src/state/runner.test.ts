@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import type { AgentPaths } from "../paths";
-import { LOCKED, PersistedState, type Effect } from "@asd/shared";
-import { readJson, silentLogger } from "@asd/shared/node";
+import { LOCKED, PersistedState, type Effect } from "@stillgate/shared";
+import { readJson, silentLogger } from "@stillgate/shared/node";
 import { ConfigStore } from "../config";
 import { createEffectRunner } from "../effects";
 import { FakeClock, FakeExec, KIOSK, tempPaths } from "../test-helpers/fakes";

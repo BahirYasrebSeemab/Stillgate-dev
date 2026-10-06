@@ -9,8 +9,8 @@ import {
   MachineId,
   PasswordRecord,
   Policy,
-} from "@asd/shared";
-import { JsonFileStore, type Logger } from "@asd/shared/node";
+} from "@stillgate/shared";
+import { JsonFileStore, type Logger } from "@stillgate/shared/node";
 import { z } from "zod";
 
 // The manager's data, as three JSON files in its user-data folder.

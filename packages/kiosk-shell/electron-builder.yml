@@ -1,9 +1,9 @@
 # Builds the kiosk shell for the visitor PCs: bun run dist (run ON WINDOWS).
-# The install script copies the unpacked app to C:\Program Files\AsdLabLock\kiosk-shell
+# The install script copies the unpacked app to C:\Program Files\Stillgate\kiosk-shell
 # and the agent sets it as the kiosk user's Windows shell.
 # UNTESTED(windows): packaging with Bun's isolated node_modules layout (see manager's yml).
-appId: local.asd.lablock.kiosk
-productName: ASD Kiosk Shell
+appId: local.stillgate.kiosk
+productName: Stillgate Kiosk
 executableName: kiosk-shell
 directories:
   output: release

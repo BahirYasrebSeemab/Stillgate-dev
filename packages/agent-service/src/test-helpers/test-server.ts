@@ -1,8 +1,8 @@
 import { createServer, type Server } from "node:https";
 import type { AddressInfo } from "node:net";
 import { X509Certificate } from "node:crypto";
-import { parseAgentMessage, type MachineId, type ServerToAgent } from "@asd/shared";
-import { authMac, certFingerprint, randomHex, safeEqualHex } from "@asd/shared/node";
+import { parseAgentMessage, type MachineId, type ServerToAgent } from "@stillgate/shared";
+import { authMac, certFingerprint, randomHex, safeEqualHex } from "@stillgate/shared/node";
 import { generate } from "selfsigned";
 import { WebSocketServer, type WebSocket } from "ws";
 
@@ -18,7 +18,7 @@ export type TestServer = {
 };
 
 export async function makeCert(): Promise<{ key: string; cert: string; fingerprint: string }> {
-  const pems = await generate([{ name: "commonName", value: "asd-test" }], { keySize: 2048, algorithm: "sha256" });
+  const pems = await generate([{ name: "commonName", value: "stillgate-test" }], { keySize: 2048, algorithm: "sha256" });
   return { key: pems.private, cert: pems.cert, fingerprint: certFingerprint(new X509Certificate(pems.cert).raw) };
 }
 

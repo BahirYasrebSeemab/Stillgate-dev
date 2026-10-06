@@ -1,6 +1,6 @@
-// Vite handles these imports itself: CSS is bundled, an .svg import becomes its URL.
+// Vite handles these imports itself: CSS is bundled, an image import becomes its URL.
 declare module "*.css";
-declare module "*.svg" {
+declare module "*.png" {
   const url: string;
   export default url;
 }

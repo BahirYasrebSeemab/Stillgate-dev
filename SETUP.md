@@ -37,7 +37,7 @@
 3. As Administrator:
    `powershell -ExecutionPolicy Bypass -File tools\scripts\install-agent.ps1 -KioskUser kiosk -AgentSource <...\release\agent> -KioskShellSource <...\release\win-unpacked> -WinSWExe <...\WinSW-x64.exe>`
 4. In the manager: "Add a computer" → choose this PC's address → copy the pairing string. On the visitor PC:
-   `& "C:\Program Files\nodejs\node.exe" "C:\Program Files\AsdLabLock\agent\cli.js" pair "<pairing string>"`
-5. Check that `C:\Program Files\AsdLabLock\tools\emergency-restore.ps1` exists (the install script copies it; `docs/RECOVERY.md` uses it).
+   `& "C:\Program Files\nodejs\node.exe" "C:\Program Files\Stillgate\agent\cli.js" pair "<pairing string>"`
+5. Check that `C:\Program Files\Stillgate\tools\emergency-restore.ps1` exists (the install script copies it; `docs/RECOVERY.md` uses it).
 6. Set up automatic sign-in for the kiosk user with **Sysinternals Autologon** (download it yourself; never store the password in this repo).
 7. Work through `TESTING.md` sections C → F. Turn off dry-run (`cli.js set-dry-run off`) and later switch to enforce (`cli.js set-enforcement enforce`) **only** when the checklist says so.

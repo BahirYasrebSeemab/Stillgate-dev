@@ -10,7 +10,7 @@ describe("hasDebugSwitch", () => {
   });
 
   it("allows a normal start", () => {
-    expect(hasDebugSwitch(["C:\\Program Files\\AsdLabLock\\kiosk-shell\\kiosk-shell.exe"])).toBe(false);
+    expect(hasDebugSwitch(["C:\\Program Files\\Stillgate\\kiosk-shell\\kiosk-shell.exe"])).toBe(false);
     expect(hasDebugSwitch(["app.exe", "--allow-file-access"])).toBe(false);
   });
 });
