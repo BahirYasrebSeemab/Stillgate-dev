@@ -27,6 +27,7 @@ bun run typecheck    # also type-checks the tests and both React UIs
 ```
 
 ## Documentation
+- **Install it:** [`docs/INSTALL.md`](docs/INSTALL.md), manager PC + every visitor PC, step by step.
 - **Learn how it works:** [`docs/learn/`](docs/learn/00-index.md), one simple explanation per part.
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md): diagrams and how the parts talk.
 - [`docs/DECISIONS.md`](docs/DECISIONS.md): every important decision and why.
