@@ -17,7 +17,6 @@ export function LockedScreen({ serviceDown }: { readonly serviceDown: boolean })
       <Waves />
       <div className="locked-content">
         <img className="logo" src={logoUrl} alt="American Space Dushanbe" />
-        <h1>{t.locked.title}</h1>
         <p className="big">{t.locked.askDesk}</p>
       </div>
       <BrandMark />

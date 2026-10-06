@@ -2,7 +2,6 @@
 export const t = {
   brand: "Stillgate",
   locked: {
-    title: "Welcome to American Space Dushanbe",
     askDesk: "Please ask the registration desk to unlock this computer.",
     serviceDown: "Service not running",
   },
