@@ -7,6 +7,16 @@ A visitor PC boots straight into a locked screen. The registration desk unlocks 
 - If the manager is offline, PCs **stay locked**. Nothing unlocks without the manager.
 - A maintenance hotkey (**Space + B + Y + S**) plus the restore password gives the normal Windows desktop back, even offline.
 
+| Locked: waiting for the desk | Unlocked: only the allowed programs and sites, with a countdown |
+|---|---|
+| ![Locked screen](docs/screenshots/kiosk-LOCKED.jpg) | ![Launcher](docs/screenshots/kiosk-UNLOCKED.jpg) |
+
+![The manager app: every visitor PC with its state and time left, plus unlock, extend, lock, restart and shut down for any selection](docs/screenshots/stillgate-manager.jpg)
+
+<sub>Screens rendered from the built UIs with demo data. I built Stillgate as a volunteer for American Space Dushanbe.</sub>
+
+**Stack:** TypeScript · Bun workspaces · Electron + React (kiosk and manager UIs) · a Windows service running as SYSTEM · TLS between manager and PCs with certificate pinning · zod-validated messages · scrypt-hashed restore password.
+
 > ⚠️ **Status: built and tested on Linux and on a Windows 11 dev PC (full chain in dry-run); NOT yet tested as an installed service on a visitor PC.** See [`docs/TEST-DAY.md`](docs/TEST-DAY.md).
 > Everything that touches Windows (registry, shell switching, process closing, restarts, services, installers) is marked `UNTESTED(windows)` and listed in [`TESTING.md`](TESTING.md). Safe defaults are on: **dry-run** (Windows changes are only logged) and **audit** (nothing is closed).
 
